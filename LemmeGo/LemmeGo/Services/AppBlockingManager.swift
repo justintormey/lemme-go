@@ -4,12 +4,14 @@ import Foundation
 import FamilyControls
 import ManagedSettings
 import DeviceActivity
+#endif
 
 @available(iOS 16.0, *)
 class AppBlockingManager: ObservableObject {
     @Published var isAuthorized = false
     @Published var authorizationError: String?
 
+#if canImport(FamilyControls)
     private let center = AuthorizationCenter.shared
     private let store = ManagedSettingsStore()
 
@@ -126,24 +128,8 @@ class AppBlockingManager: ObservableObject {
         deviceActivityCenter.stopMonitoring([DeviceActivityName(named)])
         print("✅ Device activity monitoring stopped")
     }
-}
-
-// MARK: - App Blocking Status
-struct AppBlockingStatus {
-    var isBlocking: Bool
-    var blockedAppsCount: Int
-    var startTime: Date?
-    var endTime: Date?
-}
-
 #else
-
-// Fallback when FamilyControls is not available
-@available(iOS 16.0, *)
-class AppBlockingManager: ObservableObject {
-    @Published var isAuthorized = false
-    @Published var authorizationError: String?
-
+    // Fallback when FamilyControls is not available
     init() {
         isAuthorized = false
         authorizationError = "FamilyControls framework not available"
@@ -168,13 +154,13 @@ class AppBlockingManager: ObservableObject {
     func unblockAllApps() {
         print("⚠️ App blocking not available - FamilyControls framework not linked")
     }
+#endif
 }
 
+// MARK: - App Blocking Status
 struct AppBlockingStatus {
     var isBlocking: Bool
     var blockedAppsCount: Int
     var startTime: Date?
     var endTime: Date?
 }
-
-#endif

@@ -2,6 +2,11 @@ import Foundation
 import SwiftUI
 import UIKit
 
+#if canImport(FamilyControls)
+import FamilyControls
+import ManagedSettings
+#endif
+
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
     @Published var isLocked = false
