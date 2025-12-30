@@ -1,4 +1,6 @@
 import Foundation
+
+#if canImport(FamilyControls)
 import FamilyControls
 import ManagedSettings
 import DeviceActivity
@@ -133,3 +135,46 @@ struct AppBlockingStatus {
     var startTime: Date?
     var endTime: Date?
 }
+
+#else
+
+// Fallback when FamilyControls is not available
+@available(iOS 16.0, *)
+class AppBlockingManager: ObservableObject {
+    @Published var isAuthorized = false
+    @Published var authorizationError: String?
+
+    init() {
+        isAuthorized = false
+        authorizationError = "FamilyControls framework not available"
+    }
+
+    func checkAuthorization() {
+        isAuthorized = false
+    }
+
+    func requestAuthorization() async {
+        authorizationError = "FamilyControls framework not available"
+    }
+
+    func blockAllApps(except allowedBundleIDs: Set<String> = []) {
+        print("⚠️ App blocking not available - FamilyControls framework not linked")
+    }
+
+    func blockSpecificApps(_ bundleIDs: Set<String>) {
+        print("⚠️ App blocking not available - FamilyControls framework not linked")
+    }
+
+    func unblockAllApps() {
+        print("⚠️ App blocking not available - FamilyControls framework not linked")
+    }
+}
+
+struct AppBlockingStatus {
+    var isBlocking: Bool
+    var blockedAppsCount: Int
+    var startTime: Date?
+    var endTime: Date?
+}
+
+#endif
