@@ -15,13 +15,16 @@
 		A100000000000000000000AB /* NFCChipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AC /* NFCChipStore.swift */; };
 		A100000000000000000000AD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* LockScreenView.swift */; };
 		A100000000000000000000AF /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* SetupView.swift */; };
-		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */;
-		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; }; };
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
+		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */; };
+		E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C862F040D7900EF951A /* FamilyControls.framework */; };
+		E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C882F040D8400EF951A /* ManagedSettings.framework */; };
+		E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */; };
+		E8F21C8F2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md in Resources */ = {isa = PBXBuildFile; fileRef = E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */; };
+		E8F21C932F04177600EF951A /* SINGLE_FILE_SOLUTION.md in Resources */ = {isa = PBXBuildFile; fileRef = E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A100000000000000000000B3 /* LemmeGo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LemmeGo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A100000000000000000000A2 /* LemmeGoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemmeGoApp.swift; sourceTree = "<group>"; };
 		A100000000000000000000A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A100000000000000000000A6 /* NFCManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCManager.swift; sourceTree = "<group>"; };
@@ -30,10 +33,16 @@
 		A100000000000000000000AC /* NFCChipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipStore.swift; sourceTree = "<group>"; };
 		A100000000000000000000AE /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B0 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
-		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A100000000000000000000B3 /* LemmeGo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LemmeGo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A100000000000000000000B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A100000000000000000000B5 /* LemmeGo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LemmeGo.entitlements; sourceTree = "<group>"; };
+		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
+		E8F21C862F040D7900EF951A /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
+		E8F21C882F040D8400EF951A /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
+		E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUILD_FIX_CHECKLIST.md; sourceTree = "<group>"; };
+		E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SINGLE_FILE_SOLUTION.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +50,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */,
+				E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */,
+				E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +98,8 @@
 				A100000000000000000000A6 /* NFCManager.swift */,
 				A100000000000000000000AA /* LockManager.swift */,
 				A100000000000000000000AC /* NFCChipStore.swift */,
-				A100000000000000000000CA /* AppBlockingManager.swift */,
+				E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */,
+				E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -103,8 +116,19 @@
 			isa = PBXGroup;
 			children = (
 				A100000000000000000000B7 /* LemmeGo */,
+				E8F21C852F040D7900EF951A /* Frameworks */,
 				A100000000000000000000BB /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		E8F21C852F040D7900EF951A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */,
+				E8F21C882F040D8400EF951A /* ManagedSettings.framework */,
+				E8F21C862F040D7900EF951A /* FamilyControls.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,6 +189,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8F21C8F2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md in Resources */,
+				E8F21C932F04177600EF951A /* SINGLE_FILE_SOLUTION.md in Resources */,
 				A100000000000000000000B1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,7 +211,6 @@
 				A100000000000000000000AD /* LockScreenView.swift in Sources */,
 				A100000000000000000000AF /* SetupView.swift in Sources */,
 				A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */,
-				A100000000000000000000C9 /* AppBlockingManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,10 +345,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LemmeGo/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "LemmeGo";
+				INFOPLIST_KEY_CFBundleDisplayName = LemmeGo;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -355,10 +381,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LemmeGo/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "LemmeGo";
+				INFOPLIST_KEY_CFBundleDisplayName = LemmeGo;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
