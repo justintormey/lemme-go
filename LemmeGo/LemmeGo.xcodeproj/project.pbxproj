@@ -15,6 +15,7 @@
 		A100000000000000000000AB /* NFCChipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AC /* NFCChipStore.swift */; };
 		A100000000000000000000AD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* LockScreenView.swift */; };
 		A100000000000000000000AF /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* SetupView.swift */; };
+		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */; };
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		A100000000000000000000AC /* NFCChipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipStore.swift; sourceTree = "<group>"; };
 		A100000000000000000000AE /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B0 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A100000000000000000000B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A100000000000000000000B5 /* LemmeGo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LemmeGo.entitlements; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 				A100000000000000000000A4 /* ContentView.swift */,
 				A100000000000000000000AE /* LockScreenView.swift */,
 				A100000000000000000000B0 /* SetupView.swift */,
+				A100000000000000000000C8 /* GlassmorphismComponents.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -179,6 +182,7 @@
 				A100000000000000000000AB /* NFCChipStore.swift in Sources */,
 				A100000000000000000000AD /* LockScreenView.swift in Sources */,
 				A100000000000000000000AF /* SetupView.swift in Sources */,
+				A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

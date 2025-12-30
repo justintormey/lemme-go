@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
@@ -14,6 +15,7 @@ class LockManager: ObservableObject {
             startLock()
         } else {
             currentSession = nil
+            setAppIcon(to: nil)
         }
     }
 
@@ -22,6 +24,7 @@ class LockManager: ObservableObject {
         currentSession = session
         saveSession()
         startLock()
+        setAppIcon(to: "AppIcon-Locked")
     }
 
     func endLockSession() {
@@ -30,6 +33,7 @@ class LockManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         clearSession()
+        setAppIcon(to: nil)
     }
 
     private func startLock() {
@@ -42,6 +46,16 @@ class LockManager: ObservableObject {
                 if !session.isActive {
                     self.endLockSession()
                 }
+            }
+        }
+    }
+
+    private func setAppIcon(to iconName: String?) {
+        guard UIApplication.shared.supportsAlternateIcons else { return }
+
+        UIApplication.shared.setAlternateIconName(iconName) { error in
+            if let error = error {
+                print("Error setting app icon: \(error.localizedDescription)")
             }
         }
     }
