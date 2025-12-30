@@ -26,6 +26,8 @@
 	<true/>
 	<key>NFCReaderUsageDescription</key>
 	<string>LemmeGo needs NFC access to read your focus chip and lock your phone for distraction-free time.</string>
+	<key>NSFamilyControlsUsageDescription</key>
+	<string>LemmeGo needs Screen Time permissions to block distracting apps during your focus sessions.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

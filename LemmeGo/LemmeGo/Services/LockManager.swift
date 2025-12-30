@@ -9,6 +9,10 @@ class LockManager: ObservableObject {
     private var timer: Timer?
     private let sessionKey = "currentLockSession"
 
+    // App blocking manager (only available on iOS 16+)
+    @available(iOS 16.0, *)
+    private lazy var appBlockingManager = AppBlockingManager()
+
     init() {
         loadSession()
         if let session = currentSession, session.isActive {
@@ -25,9 +29,23 @@ class LockManager: ObservableObject {
         saveSession()
         startLock()
         setAppIcon(to: "AppIcon-Locked")
+
+        // Enable app blocking if available and authorized
+        if #available(iOS 16.0, *) {
+            if appBlockingManager.isAuthorized {
+                // Get current app bundle ID to keep LemmeGo accessible
+                let currentAppBundle = Bundle.main.bundleIdentifier ?? "com.lemmego.app"
+                appBlockingManager.blockAllApps(except: [currentAppBundle])
+            }
+        }
     }
 
     func endLockSession() {
+        // Unblock apps first
+        if #available(iOS 16.0, *) {
+            appBlockingManager.unblockAllApps()
+        }
+
         currentSession = nil
         isLocked = false
         timer?.invalidate()
@@ -48,6 +66,21 @@ class LockManager: ObservableObject {
                 }
             }
         }
+    }
+
+    // Request Screen Time authorization
+    func requestScreenTimeAuthorization() async {
+        if #available(iOS 16.0, *) {
+            await appBlockingManager.requestAuthorization()
+        }
+    }
+
+    // Check if Screen Time is authorized
+    var isScreenTimeAuthorized: Bool {
+        if #available(iOS 16.0, *) {
+            return appBlockingManager.isAuthorized
+        }
+        return false
     }
 
     private func setAppIcon(to iconName: String?) {
