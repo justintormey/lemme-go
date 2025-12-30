@@ -13,6 +13,7 @@
 		A100000000000000000000A7 /* LockSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A8 /* LockSession.swift */; };
 		A100000000000000000000A9 /* LockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AA /* LockManager.swift */; };
 		A100000000000000000000AB /* NFCChipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AC /* NFCChipStore.swift */; };
+		A100000000000000000000C9 /* AppBlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000CA /* AppBlockingManager.swift */; };
 		A100000000000000000000AD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* LockScreenView.swift */; };
 		A100000000000000000000AF /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* SetupView.swift */; };
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
@@ -31,6 +32,7 @@
 		A100000000000000000000A8 /* LockSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockSession.swift; sourceTree = "<group>"; };
 		A100000000000000000000AA /* LockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockManager.swift; sourceTree = "<group>"; };
 		A100000000000000000000AC /* NFCChipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipStore.swift; sourceTree = "<group>"; };
+		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
 		A100000000000000000000AE /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B0 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				A100000000000000000000A6 /* NFCManager.swift */,
 				A100000000000000000000AA /* LockManager.swift */,
 				A100000000000000000000AC /* NFCChipStore.swift */,
+				A100000000000000000000CA /* AppBlockingManager.swift */,
 				E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */,
 				E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */,
 			);
@@ -208,6 +211,7 @@
 				A100000000000000000000A7 /* LockSession.swift in Sources */,
 				A100000000000000000000A9 /* LockManager.swift in Sources */,
 				A100000000000000000000AB /* NFCChipStore.swift in Sources */,
+				A100000000000000000000C9 /* AppBlockingManager.swift in Sources */,
 				A100000000000000000000AD /* LockScreenView.swift in Sources */,
 				A100000000000000000000AF /* SetupView.swift in Sources */,
 				A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */,
