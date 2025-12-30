@@ -9,10 +9,6 @@ class LockManager: ObservableObject {
     private var timer: Timer?
     private let sessionKey = "currentLockSession"
 
-    // App blocking manager (only available on iOS 16+)
-    @available(iOS 16.0, *)
-    private lazy var appBlockingManager = AppBlockingManager()
-
     init() {
         loadSession()
         if let session = currentSession, session.isActive {
@@ -32,10 +28,11 @@ class LockManager: ObservableObject {
 
         // Enable app blocking if available and authorized
         if #available(iOS 16.0, *) {
-            if appBlockingManager.isAuthorized {
+            let blockingManager = AppBlockingManager()
+            if blockingManager.isAuthorized {
                 // Get current app bundle ID to keep LemmeGo accessible
                 let currentAppBundle = Bundle.main.bundleIdentifier ?? "com.lemmego.app"
-                appBlockingManager.blockAllApps(except: [currentAppBundle])
+                blockingManager.blockAllApps(except: [currentAppBundle])
             }
         }
     }
@@ -43,7 +40,8 @@ class LockManager: ObservableObject {
     func endLockSession() {
         // Unblock apps first
         if #available(iOS 16.0, *) {
-            appBlockingManager.unblockAllApps()
+            let blockingManager = AppBlockingManager()
+            blockingManager.unblockAllApps()
         }
 
         currentSession = nil
@@ -71,14 +69,16 @@ class LockManager: ObservableObject {
     // Request Screen Time authorization
     func requestScreenTimeAuthorization() async {
         if #available(iOS 16.0, *) {
-            await appBlockingManager.requestAuthorization()
+            let blockingManager = AppBlockingManager()
+            await blockingManager.requestAuthorization()
         }
     }
 
     // Check if Screen Time is authorized
     var isScreenTimeAuthorized: Bool {
         if #available(iOS 16.0, *) {
-            return appBlockingManager.isAuthorized
+            let blockingManager = AppBlockingManager()
+            return blockingManager.isAuthorized
         }
         return false
     }
