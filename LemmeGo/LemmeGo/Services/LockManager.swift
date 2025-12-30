@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
@@ -14,6 +15,7 @@ class LockManager: ObservableObject {
             startLock()
         } else {
             currentSession = nil
+            setAppIcon(to: nil)
         }
     }
 
@@ -22,14 +24,32 @@ class LockManager: ObservableObject {
         currentSession = session
         saveSession()
         startLock()
+        setAppIcon(to: "AppIcon-Locked")
+
+        // Enable app blocking if available and authorized
+        if #available(iOS 16.0, *) {
+            let blockingManager = AppBlockingManager()
+            if blockingManager.isAuthorized {
+                // Get current app bundle ID to keep LemmeGo accessible
+                let currentAppBundle = Bundle.main.bundleIdentifier ?? "com.lemmego.app"
+                blockingManager.blockAllApps(except: [currentAppBundle])
+            }
+        }
     }
 
     func endLockSession() {
+        // Unblock apps first
+        if #available(iOS 16.0, *) {
+            let blockingManager = AppBlockingManager()
+            blockingManager.unblockAllApps()
+        }
+
         currentSession = nil
         isLocked = false
         timer?.invalidate()
         timer = nil
         clearSession()
+        setAppIcon(to: nil)
     }
 
     private func startLock() {
@@ -42,6 +62,33 @@ class LockManager: ObservableObject {
                 if !session.isActive {
                     self.endLockSession()
                 }
+            }
+        }
+    }
+
+    // Request Screen Time authorization
+    func requestScreenTimeAuthorization() async {
+        if #available(iOS 16.0, *) {
+            let blockingManager = AppBlockingManager()
+            await blockingManager.requestAuthorization()
+        }
+    }
+
+    // Check if Screen Time is authorized
+    var isScreenTimeAuthorized: Bool {
+        if #available(iOS 16.0, *) {
+            let blockingManager = AppBlockingManager()
+            return blockingManager.isAuthorized
+        }
+        return false
+    }
+
+    private func setAppIcon(to iconName: String?) {
+        guard UIApplication.shared.supportsAlternateIcons else { return }
+
+        UIApplication.shared.setAlternateIconName(iconName) { error in
+            if let error = error {
+                print("Error setting app icon: \(error.localizedDescription)")
             }
         }
     }
