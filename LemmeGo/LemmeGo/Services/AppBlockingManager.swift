@@ -1,17 +1,13 @@
 import Foundation
-
-#if canImport(FamilyControls)
 import FamilyControls
 import ManagedSettings
 import DeviceActivity
-#endif
 
 @available(iOS 16.0, *)
 class AppBlockingManager: ObservableObject {
     @Published var isAuthorized = false
     @Published var authorizationError: String?
 
-#if canImport(FamilyControls)
     private let center = AuthorizationCenter.shared
     private let store = ManagedSettingsStore()
 
@@ -27,7 +23,7 @@ class AppBlockingManager: ObservableObject {
             isAuthorized = true
         case .denied:
             isAuthorized = false
-            authorizationError = "Screen Time permission was denied. Please enable it in Settings > Screen Time."
+            authorizationError = "Screen Time permission was denied. LemmeGo requires Screen Time access to function. Please enable it in Settings > Screen Time."
         case .notDetermined:
             isAuthorized = false
         @unknown default:
@@ -53,7 +49,7 @@ class AppBlockingManager: ObservableObject {
 
     func blockAllApps(except allowedBundleIDs: Set<String> = []) {
         guard isAuthorized else {
-            authorizationError = "Not authorized for Screen Time. Please authorize first."
+            authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
             return
         }
 
@@ -71,7 +67,7 @@ class AppBlockingManager: ObservableObject {
 
     func blockSpecificApps(_ bundleIDs: Set<String>) {
         guard isAuthorized else {
-            authorizationError = "Not authorized for Screen Time. Please authorize first."
+            authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
             return
         }
 
@@ -90,19 +86,9 @@ class AppBlockingManager: ObservableObject {
         print("✅ All apps unblocked")
     }
 
-    // MARK: - Helper Methods
-
-    func getBlockedAppsCount() -> Int {
-        // This would require querying the current shield configuration
-        // For now, return 0 as placeholder
-        return 0
-    }
-
-    // MARK: - Device Activity Scheduling (Optional)
+    // MARK: - Device Activity Scheduling
 
     func scheduleDeviceActivity(for duration: TimeInterval, named: String) {
-        // This requires DeviceActivityCenter and creating a schedule
-        // More complex implementation for timed blocking
         let deviceActivityCenter = DeviceActivity.Center()
 
         let schedule = DeviceActivitySchedule(
@@ -128,39 +114,4 @@ class AppBlockingManager: ObservableObject {
         deviceActivityCenter.stopMonitoring([DeviceActivityName(named)])
         print("✅ Device activity monitoring stopped")
     }
-#else
-    // Fallback when FamilyControls is not available
-    init() {
-        isAuthorized = false
-        authorizationError = "FamilyControls framework not available"
-    }
-
-    func checkAuthorization() {
-        isAuthorized = false
-    }
-
-    func requestAuthorization() async {
-        authorizationError = "FamilyControls framework not available"
-    }
-
-    func blockAllApps(except allowedBundleIDs: Set<String> = []) {
-        print("⚠️ App blocking not available - FamilyControls framework not linked")
-    }
-
-    func blockSpecificApps(_ bundleIDs: Set<String>) {
-        print("⚠️ App blocking not available - FamilyControls framework not linked")
-    }
-
-    func unblockAllApps() {
-        print("⚠️ App blocking not available - FamilyControls framework not linked")
-    }
-#endif
-}
-
-// MARK: - App Blocking Status
-struct AppBlockingStatus {
-    var isBlocking: Bool
-    var blockedAppsCount: Int
-    var startTime: Date?
-    var endTime: Date?
 }
