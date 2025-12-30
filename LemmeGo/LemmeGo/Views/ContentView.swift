@@ -1,4 +1,5 @@
 import SwiftUI
+import FamilyControls
 
 struct ContentView: View {
     @EnvironmentObject var lockManager: LockManager
@@ -231,12 +232,14 @@ struct MainView: View {
 struct SettingsView: View {
     @EnvironmentObject var chipStore: NFCChipStore
     @EnvironmentObject var nfcManager: NFCManager
+    @EnvironmentObject var lockManager: LockManager
     @Environment(\.dismiss) var dismiss
 
     @State private var isScanning = false
     @State private var showingNameAlert = false
     @State private var newChipId: String?
     @State private var chipName = ""
+    @State private var showingAppPicker = false
 
     var body: some View {
         ZStack {
@@ -263,6 +266,76 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
+                        // Screen Time Permission Card
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Image(systemName: lockManager.isScreenTimeAuthorized ? "checkmark.shield.fill" : "exclamationmark.shield.fill")
+                                        .foregroundColor(lockManager.isScreenTimeAuthorized ? .green : .orange)
+                                    Text("Screen Time Access")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Text(lockManager.isScreenTimeAuthorized 
+                                    ? "App blocking is enabled" 
+                                    : "Required for blocking apps during lock sessions")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.7))
+                                
+                                if !lockManager.isScreenTimeAuthorized {
+                                    Button {
+                                        Task {
+                                            await lockManager.requestScreenTimeAuthorization()
+                                        }
+                                    } label: {
+                                        Text("Enable Screen Time")
+                                            .font(.subheadline.bold())
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 8)
+                                            .background(Color.blue)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(8)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        
+                        // Blocked Apps Section
+                        if #available(iOS 16.0, *) {
+                            if lockManager.isScreenTimeAuthorized {
+                                GlassCard {
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack {
+                                            Image(systemName: "hand.raised.fill")
+                                                .foregroundColor(.blue)
+                                            Text("Blocked Apps")
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                        }
+                                        
+                                        Text("Choose which apps to block during focus sessions")
+                                            .font(.subheadline)
+                                            .foregroundColor(.white.opacity(0.7))
+                                        
+                                        Button {
+                                            showingAppPicker = true
+                                        } label: {
+                                            Text("Manage Blocked Apps")
+                                                .font(.subheadline.bold())
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical, 8)
+                                                .background(Color.blue)
+                                                .foregroundColor(.white)
+                                                .cornerRadius(8)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 24)
+                            }
+                        }
+                        
                         // Registered chips section
                         GlassCard {
                             VStack(alignment: .leading, spacing: 16) {
@@ -359,6 +432,12 @@ struct SettingsView: View {
             }
         } message: {
             Text("Give your NFC chip a memorable name")
+        }
+        .sheet(isPresented: $showingAppPicker) {
+            if #available(iOS 16.0, *) {
+                AppPickerView(lockManager: lockManager)
+                    .environmentObject(lockManager)
+            }
         }
     }
 
