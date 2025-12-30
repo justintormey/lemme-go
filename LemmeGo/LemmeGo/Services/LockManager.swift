@@ -1,11 +1,8 @@
 import Foundation
 import SwiftUI
 import UIKit
-
-#if canImport(FamilyControls)
 import FamilyControls
 import ManagedSettings
-#endif
 
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
@@ -13,8 +10,14 @@ class LockManager: ObservableObject {
 
     private var timer: Timer?
     private let sessionKey = "currentLockSession"
+    private var appBlockingManager: AppBlockingManager?
 
     init() {
+        // Initialize app blocking manager on iOS 16+
+        if #available(iOS 16.0, *) {
+            appBlockingManager = AppBlockingManager()
+        }
+
         loadSession()
         if let session = currentSession, session.isActive {
             startLock()
@@ -31,21 +34,20 @@ class LockManager: ObservableObject {
         startLock()
         setAppIcon(to: "AppIcon-Locked")
 
-        // Enable app blocking if available and authorized
-        if #available(iOS 16.0, *) {
-            let blockingManager = AppBlockingManager()
+        // Block apps - this is REQUIRED functionality
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             if blockingManager.isAuthorized {
-                // Get current app bundle ID to keep LemmeGo accessible
                 let currentAppBundle = Bundle.main.bundleIdentifier ?? "com.lemmego.app"
                 blockingManager.blockAllApps(except: [currentAppBundle])
+            } else {
+                print("❌ Screen Time not authorized - app blocking will not work")
             }
         }
     }
 
     func endLockSession() {
-        // Unblock apps first
-        if #available(iOS 16.0, *) {
-            let blockingManager = AppBlockingManager()
+        // Unblock apps
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             blockingManager.unblockAllApps()
         }
 
@@ -71,21 +73,27 @@ class LockManager: ObservableObject {
         }
     }
 
-    // Request Screen Time authorization
+    // Request Screen Time authorization - REQUIRED for app to function
     func requestScreenTimeAuthorization() async {
-        if #available(iOS 16.0, *) {
-            let blockingManager = AppBlockingManager()
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             await blockingManager.requestAuthorization()
         }
     }
 
-    // Check if Screen Time is authorized
+    // Check if Screen Time is authorized - REQUIRED for app to function
     var isScreenTimeAuthorized: Bool {
-        if #available(iOS 16.0, *) {
-            let blockingManager = AppBlockingManager()
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             return blockingManager.isAuthorized
         }
         return false
+    }
+
+    // Get authorization error message if any
+    var screenTimeError: String? {
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+            return blockingManager.authorizationError
+        }
+        return "Screen Time API not available on this iOS version"
     }
 
     private func setAppIcon(to iconName: String?) {
