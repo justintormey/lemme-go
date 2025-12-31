@@ -4,10 +4,14 @@ struct SetupView: View {
     @EnvironmentObject var chipStore: NFCChipStore
     @EnvironmentObject var nfcManager: NFCManager
 
-    @State private var isScanning = false
     @State private var showingNameAlert = false
     @State private var scannedChipId: String?
     @State private var chipName = ""
+
+    // Use NFCManager's isScanning to prevent stuck UI
+    private var isScanning: Bool {
+        nfcManager.isScanning
+    }
 
     var body: some View {
         VStack(spacing: 30) {
@@ -30,7 +34,7 @@ struct SetupView: View {
             }
 
             VStack(alignment: .leading, spacing: 15) {
-                SetupStep(number: 1, text: "Get an NFC chip or tag")
+                SetupStep(number: 1, text: "Get an NFC tag")
                 SetupStep(number: 2, text: "Tap the button below to scan it")
                 SetupStep(number: 3, text: "Use it to lock your phone anytime")
             }
@@ -42,7 +46,7 @@ struct SetupView: View {
                 Button(action: startScanning) {
                     HStack {
                         Image(systemName: "wave.3.right")
-                        Text("Register Your First Chip")
+                        Text("Register Your First Tag")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -57,7 +61,7 @@ struct SetupView: View {
                     HStack {
                         ProgressView()
                             .padding(.trailing, 5)
-                        Text("Hold your phone near the NFC chip...")
+                        Text("Hold your phone near the NFC tag...")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -73,7 +77,7 @@ struct SetupView: View {
             .padding()
         }
         .padding()
-        .alert("Name Your Chip", isPresented: $showingNameAlert) {
+        .alert("Name Your Tag", isPresented: $showingNameAlert) {
             TextField("e.g., Work Focus", text: $chipName)
             Button("Cancel", role: .cancel) {
                 scannedChipId = nil
@@ -87,21 +91,19 @@ struct SetupView: View {
                 chipName = ""
             }
         } message: {
-            Text("Give your NFC chip a memorable name")
+            Text("Give your NFC tag a memorable name")
         }
     }
 
     private func startScanning() {
-        isScanning = true
         nfcManager.startScanning { chipId in
             handleChipScanned(chipId)
         }
     }
 
     private func handleChipScanned(_ chipId: String) {
-        isScanning = false
         scannedChipId = chipId
-        chipName = "My Focus Chip"
+        chipName = "My Focus Tag"
         showingNameAlert = true
     }
 }

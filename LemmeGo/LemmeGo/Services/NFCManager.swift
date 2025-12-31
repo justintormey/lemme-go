@@ -19,9 +19,12 @@ class NFCManager: NSObject, ObservableObject {
             return
         }
 
+        // Prevent multiple simultaneous scanning sessions
+        guard !isScanning else { return }
+
         self.onChipDetected = onChipDetected
         session = NFCTagReaderSession(pollingOption: [.iso14443, .iso15693], delegate: self)
-        session?.alertMessage = "Hold your phone near the NFC chip"
+        session?.alertMessage = "Hold your phone near the NFC tag"
         session?.begin()
         isScanning = true
     }
@@ -29,12 +32,13 @@ class NFCManager: NSObject, ObservableObject {
     func stopScanning() {
         session?.invalidate()
         isScanning = false
+        onChipDetected = nil
     }
 }
 
 extension NFCManager: NFCTagReaderSessionDelegate {
     func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
-        print("NFC session became active")
+        // Session is now active and ready to detect tags
     }
 
     func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
@@ -74,14 +78,14 @@ extension NFCManager: NFCTagReaderSessionDelegate {
             }
 
             if let chipId = chipId {
-                session.alertMessage = "Chip detected!"
+                session.alertMessage = "Tag detected!"
                 DispatchQueue.main.async {
                     self.scannedChipId = chipId
                     self.onChipDetected?(chipId)
                 }
                 session.invalidate()
             } else {
-                session.invalidate(errorMessage: "Could not read chip ID")
+                session.invalidate(errorMessage: "Could not read tag ID")
             }
         }
     }

@@ -5,12 +5,15 @@ struct LockScreenView: View {
     @EnvironmentObject var nfcManager: NFCManager
     @EnvironmentObject var chipStore: NFCChipStore
 
-    @State private var isScanning = false
-    @State private var showEmergencyConfirm = false
     @State private var currentTime = Date()
     @State private var pulse = false
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    // Use NFCManager's isScanning instead of local state to prevent stuck UI
+    private var isScanning: Bool {
+        nfcManager.isScanning
+    }
 
     var body: some View {
         ZStack {
@@ -68,7 +71,7 @@ struct LockScreenView: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 10)
 
-                Text("Stay focused")
+                Text("Avoid Distractions")
                     .font(.headline)
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.top, 4)
@@ -88,6 +91,7 @@ struct LockScreenView: View {
                                 .font(.system(size: 64, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                                 .monospacedDigit()
+                                .id(currentTime) // Force refresh when currentTime updates
 
                             // Progress bar
                             GeometryReader { geometry in
@@ -108,6 +112,7 @@ struct LockScreenView: View {
                                             width: geometry.size.width * CGFloat(1.0 - (session.remainingTime / session.duration)),
                                             height: 8
                                         )
+                                        .animation(.linear(duration: 1), value: currentTime)
                                 }
                             }
                             .frame(height: 8)
@@ -133,7 +138,7 @@ struct LockScreenView: View {
                 // Controls
                 VStack(spacing: 20) {
                     GlassButton(
-                        title: "Tap Chip to Unlock",
+                        title: "Tap Tag to Unlock",
                         icon: "wave.3.right.circle.fill",
                         action: startUnlockScan,
                         isDark: true,
@@ -145,7 +150,7 @@ struct LockScreenView: View {
                         HStack(spacing: 12) {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            Text("Hold phone near your chip...")
+                            Text("Hold phone near your tag...")
                                 .font(.subheadline)
                                 .foregroundColor(.white.opacity(0.9))
                         }
@@ -159,14 +164,6 @@ struct LockScreenView: View {
                                 )
                         )
                     }
-
-                    Button(action: { showEmergencyConfirm = true }) {
-                        Text("Emergency Unlock")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.5))
-                            .underline()
-                            .padding()
-                    }
                 }
                 .padding(.bottom, 50)
             }
@@ -177,32 +174,21 @@ struct LockScreenView: View {
         .onReceive(timer) { _ in
             currentTime = Date()
         }
-        .alert("Emergency Unlock", isPresented: $showEmergencyConfirm) {
-            Button("Cancel", role: .cancel) { }
-            Button("Unlock Now", role: .destructive) {
-                lockManager.endLockSession()
-            }
-        } message: {
-            Text("Are you sure you want to end this focus session early? This defeats the purpose of the lock.")
-        }
     }
 
     private func startUnlockScan() {
-        isScanning = true
         nfcManager.startScanning { chipId in
             handleUnlockChip(chipId)
         }
     }
 
     private func handleUnlockChip(_ chipId: String) {
-        isScanning = false
-
         if let session = lockManager.currentSession, session.chipId == chipId {
             lockManager.endLockSession()
         } else if chipStore.isChipRegistered(id: chipId) {
-            nfcManager.errorMessage = "Wrong chip! Use the chip that started this session."
+            nfcManager.errorMessage = "Wrong tag! Use the tag that started this session."
         } else {
-            nfcManager.errorMessage = "Unrecognized chip"
+            nfcManager.errorMessage = "Unrecognized tag"
         }
     }
 }

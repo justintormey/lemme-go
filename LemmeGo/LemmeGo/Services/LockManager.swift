@@ -3,6 +3,7 @@ import SwiftUI
 import UIKit
 import FamilyControls
 import ManagedSettings
+import Combine
 
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
@@ -10,12 +11,25 @@ class LockManager: ObservableObject {
 
     private var timer: Timer?
     private let sessionKey = "currentLockSession"
-    private var appBlockingManager: AppBlockingManager?
+
+    // Make appBlockingManager internal so SettingsView can access it for permission checks
+    @available(iOS 16.0, *)
+    var appBlockingManager: AppBlockingManager?
+    private var blockedAppsStore: BlockedAppsStore?
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         // Initialize app blocking manager on iOS 16+
         if #available(iOS 16.0, *) {
-            appBlockingManager = AppBlockingManager()
+            let manager = AppBlockingManager()
+            appBlockingManager = manager
+            blockedAppsStore = BlockedAppsStore()
+
+            // Subscribe to AppBlockingManager's isAuthorized changes to trigger LockManager updates
+            manager.objectWillChange.sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
         }
 
         loadSession()
@@ -27,7 +41,23 @@ class LockManager: ObservableObject {
         }
     }
 
-    func startLockSession(chipId: String, duration: TimeInterval) {
+    deinit {
+        timer?.invalidate()
+        timer = nil
+    }
+
+    func startLockSession(chipId: String, duration: TimeInterval) -> Bool {
+        // Check Screen Time authorization before starting lock
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+            // Always check current authorization status
+            blockingManager.checkAuthorization()
+
+            if !blockingManager.isAuthorized {
+                // Permission was revoked - cannot lock
+                return false
+            }
+        }
+
         let session = LockSession(chipId: chipId, duration: duration)
         currentSession = session
         saveSession()
@@ -35,14 +65,17 @@ class LockManager: ObservableObject {
         setAppIcon(to: "AppIcon-Locked")
 
         // Block apps - this is REQUIRED functionality
-        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
             if blockingManager.isAuthorized {
-                let currentAppBundle = Bundle.main.bundleIdentifier ?? "com.lemmego.app"
-                blockingManager.blockAllApps(except: [currentAppBundle])
-            } else {
-                print("❌ Screen Time not authorized - app blocking will not work")
+                // Use the user's selected apps from BlockedAppsStore
+                if store.hasBlockedApps {
+                    blockingManager.blockSelectedApps(store.selection)
+                }
+                // If no apps selected, user should configure in settings
             }
         }
+
+        return true
     }
 
     func endLockSession() {
@@ -70,6 +103,10 @@ class LockManager: ObservableObject {
                     self.endLockSession()
                 }
             }
+        }
+        // Add timer to common run loop mode so it fires during scrolling and other UI interactions
+        if let timer = timer {
+            RunLoop.current.add(timer, forMode: .common)
         }
     }
 
@@ -101,7 +138,11 @@ class LockManager: ObservableObject {
 
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if let error = error {
-                print("Error setting app icon: \(error.localizedDescription)")
+                // Silently ignore cancellation errors (expected when app is active)
+                let nsError = error as NSError
+                if nsError.code != 3072 { // NSUserCancelledError
+                    // Icon change failed, but not critical to functionality
+                }
             }
         }
     }
@@ -134,5 +175,16 @@ class LockManager: ObservableObject {
         } else {
             return String(format: "%02d:%02d", minutes, secs)
         }
+    }
+
+    // Get the blocked apps store
+    @available(iOS 16.0, *)
+    func getBlockedAppsStore() -> BlockedAppsStore {
+        if let store = blockedAppsStore {
+            return store
+        }
+        let store = BlockedAppsStore()
+        blockedAppsStore = store
+        return store
     }
 }

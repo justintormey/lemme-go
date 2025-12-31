@@ -13,6 +13,12 @@ class AppBlockingManager: ObservableObject {
 
     init() {
         checkAuthorization()
+
+        // Check again after a delay to ensure authorization status is fully loaded
+        // This fixes an issue where authorization status may not be immediately available on app launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.checkAuthorization()
+        }
     }
 
     // MARK: - Authorization
@@ -54,27 +60,36 @@ class AppBlockingManager: ObservableObject {
         }
 
         // Block all applications except system apps and LemmeGo
-        store.shield.applications = .all(except: allowedBundleIDs)
-
-        // Also block app categories to be comprehensive
-        store.shield.applicationCategories = .all()
-
-        // Block web content during focus
-        store.shield.webDomains = .all()
-
-        print("✅ Apps blocked successfully")
+        // Note: To block all apps, we need to use FamilyActivitySelection
+        // For now, we'll use specific blocking approach
+        store.shield.applications = nil // Reset first
+        store.shield.applicationCategories = .all(except: Set())
+        store.shield.webDomains = nil
     }
 
-    func blockSpecificApps(_ bundleIDs: Set<String>) {
+    func blockSpecificApps(_ tokens: Set<ApplicationToken>) {
         guard isAuthorized else {
             authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
             return
         }
 
-        // Block specific applications by bundle ID
-        store.shield.applications = .specific(bundleIDs)
+        // Block specific applications by token
+        store.shield.applications = tokens
+    }
 
-        print("✅ Specific apps blocked: \(bundleIDs)")
+    func blockSelectedApps(_ selection: FamilyActivitySelection) {
+        // Always check authorization status before blocking (fixes race condition on app launch)
+        checkAuthorization()
+
+        guard isAuthorized else {
+            authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
+            return
+        }
+
+        // Block the selected apps, categories, and web domains
+        store.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
+        store.shield.applicationCategories = selection.categoryTokens.isEmpty ? nil : .specific(selection.categoryTokens)
+        store.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
     }
 
     func unblockAllApps() {
@@ -82,14 +97,12 @@ class AppBlockingManager: ObservableObject {
         store.shield.applications = nil
         store.shield.applicationCategories = nil
         store.shield.webDomains = nil
-
-        print("✅ All apps unblocked")
     }
 
     // MARK: - Device Activity Scheduling
 
     func scheduleDeviceActivity(for duration: TimeInterval, named: String) {
-        let deviceActivityCenter = DeviceActivity.Center()
+        let deviceActivityCenter = DeviceActivityCenter()
 
         let schedule = DeviceActivitySchedule(
             intervalStart: DateComponents(hour: 0, minute: 0),
@@ -102,16 +115,13 @@ class AppBlockingManager: ObservableObject {
                 DeviceActivityName(named),
                 during: schedule
             )
-            print("✅ Device activity monitoring started")
         } catch {
-            print("❌ Failed to start monitoring: \(error)")
             authorizationError = "Failed to schedule device activity: \(error.localizedDescription)"
         }
     }
 
     func stopDeviceActivity(named: String) {
-        let deviceActivityCenter = DeviceActivity.Center()
+        let deviceActivityCenter = DeviceActivityCenter()
         deviceActivityCenter.stopMonitoring([DeviceActivityName(named)])
-        print("✅ Device activity monitoring stopped")
     }
 }

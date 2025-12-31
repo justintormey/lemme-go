@@ -14,28 +14,11 @@ struct AppPickerView: View {
     }
     
     var body: some View {
-        ZStack {
-            GlassBackground()
-            
-            VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                    Text("Block Apps")
-                        .font(.title2.bold())
-                        .foregroundColor(.white)
-                    Spacer()
-                    Color.clear.frame(width: 30)
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 60)
-                .padding(.bottom, 30)
-                
+        NavigationView {
+            ZStack {
+                GlassBackground()
+                    .ignoresSafeArea()
+
                 ScrollView {
                     VStack(spacing: 20) {
                         // Instruction card
@@ -48,14 +31,14 @@ struct AppPickerView: View {
                                         .font(.headline)
                                         .foregroundColor(.white)
                                 }
-                                
+
                                 Text("Select which apps and websites you want to block during focus sessions. These will be unavailable when your phone is locked with NFC.")
                                     .font(.subheadline)
                                     .foregroundColor(.white.opacity(0.8))
                             }
                         }
                         .padding(.horizontal, 24)
-                        
+
                         // Selection summary
                         if blockedAppsStore.hasBlockedApps {
                             GlassCard {
@@ -67,7 +50,7 @@ struct AppPickerView: View {
                                             .font(.headline)
                                             .foregroundColor(.white)
                                     }
-                                    
+
                                     VStack(alignment: .leading, spacing: 8) {
                                         if !blockedAppsStore.selection.applicationTokens.isEmpty {
                                             HStack {
@@ -78,7 +61,7 @@ struct AppPickerView: View {
                                             }
                                             .font(.subheadline)
                                         }
-                                        
+
                                         if !blockedAppsStore.selection.categoryTokens.isEmpty {
                                             HStack {
                                                 Image(systemName: "square.grid.2x2.fill")
@@ -88,7 +71,7 @@ struct AppPickerView: View {
                                             }
                                             .font(.subheadline)
                                         }
-                                        
+
                                         if !blockedAppsStore.selection.webDomainTokens.isEmpty {
                                             HStack {
                                                 Image(systemName: "globe")
@@ -103,7 +86,7 @@ struct AppPickerView: View {
                             }
                             .padding(.horizontal, 24)
                         }
-                        
+
                         // Select apps button
                         GlassButton(
                             title: blockedAppsStore.hasBlockedApps ? "Change Selection" : "Select Apps to Block",
@@ -111,7 +94,7 @@ struct AppPickerView: View {
                             action: { isPresented = true }
                         )
                         .padding(.horizontal, 24)
-                        
+
                         // Clear selection button
                         if blockedAppsStore.hasBlockedApps {
                             Button(action: clearSelection) {
@@ -135,10 +118,20 @@ struct AppPickerView: View {
                             .padding(.horizontal, 24)
                         }
                     }
-                    .padding(.vertical, 20)
+                    .padding(.top, 20)
+                    .padding(.bottom, 40)
                 }
-                
-                Spacer()
+            }
+            .navigationTitle("Block Apps")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                    }
+                }
             }
         }
         .familyActivityPicker(

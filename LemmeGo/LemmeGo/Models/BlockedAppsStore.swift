@@ -15,23 +15,21 @@ class BlockedAppsStore: ObservableObject {
         do {
             let encoded = try JSONEncoder().encode(selection)
             UserDefaults.standard.set(encoded, forKey: selectionKey)
-            print("✅ Saved app selection")
         } catch {
-            print("❌ Failed to save app selection: \(error.localizedDescription)")
+            // Failed to save - selection will not persist
         }
     }
-    
+
     func loadSelection() {
         guard let data = UserDefaults.standard.data(forKey: selectionKey) else {
-            print("ℹ️ No saved app selection found")
+            // No saved selection - will use empty selection
             return
         }
-        
+
         do {
             selection = try JSONDecoder().decode(FamilyActivitySelection.self, from: data)
-            print("✅ Loaded app selection")
         } catch {
-            print("❌ Failed to load app selection: \(error.localizedDescription)")
+            // Failed to load - will use empty selection
         }
     }
     

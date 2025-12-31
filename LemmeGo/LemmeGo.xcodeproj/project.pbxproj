@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51CE3004434244D9BDB2CD4D /* BlockedAppsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */; };
+		9A4A3273F9034AAC81183BF1 /* AppPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53ED8FBB2E84201AE3AD36F /* AppPickerView.swift */; };
 		A100000000000000000000A1 /* LemmeGoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A2 /* LemmeGoApp.swift */; };
 		A100000000000000000000A3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A4 /* ContentView.swift */; };
 		A100000000000000000000A5 /* NFCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A6 /* NFCManager.swift */; };
 		A100000000000000000000A7 /* LockSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A8 /* LockSession.swift */; };
 		A100000000000000000000A9 /* LockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AA /* LockManager.swift */; };
 		A100000000000000000000AB /* NFCChipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AC /* NFCChipStore.swift */; };
-		A100000000000000000000C9 /* AppBlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000CA /* AppBlockingManager.swift */; };
 		A100000000000000000000AD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* LockScreenView.swift */; };
 		A100000000000000000000AF /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* SetupView.swift */; };
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
 		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */; };
+		A100000000000000000000C9 /* AppBlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000CA /* AppBlockingManager.swift */; };
 		E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C862F040D7900EF951A /* FamilyControls.framework */; };
 		E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C882F040D8400EF951A /* ManagedSettings.framework */; };
 		E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */; };
-		E8F21C8F2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md in Resources */ = {isa = PBXBuildFile; fileRef = E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */; };
-		E8F21C932F04177600EF951A /* SINGLE_FILE_SOLUTION.md in Resources */ = {isa = PBXBuildFile; fileRef = E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +32,6 @@
 		A100000000000000000000A8 /* LockSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockSession.swift; sourceTree = "<group>"; };
 		A100000000000000000000AA /* LockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockManager.swift; sourceTree = "<group>"; };
 		A100000000000000000000AC /* NFCChipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipStore.swift; sourceTree = "<group>"; };
-		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
 		A100000000000000000000AE /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B0 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		A100000000000000000000B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -40,11 +39,12 @@
 		A100000000000000000000B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A100000000000000000000B5 /* LemmeGo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LemmeGo.entitlements; sourceTree = "<group>"; };
 		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
+		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
+		E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStore.swift; sourceTree = "<group>"; };
 		E8F21C862F040D7900EF951A /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 		E8F21C882F040D8400EF951A /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
-		E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUILD_FIX_CHECKLIST.md; sourceTree = "<group>"; };
-		E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SINGLE_FILE_SOLUTION.md; sourceTree = "<group>"; };
+		F53ED8FBB2E84201AE3AD36F /* AppPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +78,7 @@
 		A100000000000000000000B8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F53ED8FBB2E84201AE3AD36F /* AppPickerView.swift */,
 				A100000000000000000000A4 /* ContentView.swift */,
 				A100000000000000000000AE /* LockScreenView.swift */,
 				A100000000000000000000B0 /* SetupView.swift */,
@@ -89,6 +90,7 @@
 		A100000000000000000000B9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */,
 				A100000000000000000000A8 /* LockSession.swift */,
 			);
 			path = Models;
@@ -101,8 +103,6 @@
 				A100000000000000000000AA /* LockManager.swift */,
 				A100000000000000000000AC /* NFCChipStore.swift */,
 				A100000000000000000000CA /* AppBlockingManager.swift */,
-				E8F21C8E2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md */,
-				E8F21C922F04177600EF951A /* SINGLE_FILE_SOLUTION.md */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -192,8 +192,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8F21C8F2F0416D900EF951A /* BUILD_FIX_CHECKLIST.md in Resources */,
-				E8F21C932F04177600EF951A /* SINGLE_FILE_SOLUTION.md in Resources */,
 				A100000000000000000000B1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -205,6 +203,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51CE3004434244D9BDB2CD4D /* BlockedAppsStore.swift in Sources */,
+				9A4A3273F9034AAC81183BF1 /* AppPickerView.swift in Sources */,
 				A100000000000000000000A3 /* ContentView.swift in Sources */,
 				A100000000000000000000A1 /* LemmeGoApp.swift in Sources */,
 				A100000000000000000000A5 /* NFCManager.swift in Sources */,

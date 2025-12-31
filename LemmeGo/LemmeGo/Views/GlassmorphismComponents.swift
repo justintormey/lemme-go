@@ -18,6 +18,15 @@ struct GlassBackground: View {
 
 // MARK: - Dark Locked Background
 struct LockedBackground: View {
+    // Pre-generate particle positions to avoid re-randomizing on every render
+    private let particles: [(x: CGFloat, y: CGFloat, size: CGFloat)] = (0..<20).map { _ in
+        (
+            x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+            y: CGFloat.random(in: 0...UIScreen.main.bounds.height),
+            size: CGFloat.random(in: 2...4)
+        )
+    }
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -30,15 +39,12 @@ struct LockedBackground: View {
                 endPoint: .bottomTrailing
             )
 
-            // Animated particles/stars effect
-            ForEach(0..<20, id: \.self) { i in
+            // Static particles/stars effect (pre-generated positions)
+            ForEach(0..<particles.count, id: \.self) { i in
                 Circle()
                     .fill(Color.red.opacity(0.3))
-                    .frame(width: CGFloat.random(in: 2...4))
-                    .position(
-                        x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                        y: CGFloat.random(in: 0...UIScreen.main.bounds.height)
-                    )
+                    .frame(width: particles[i].size)
+                    .position(x: particles[i].x, y: particles[i].y)
                     .blur(radius: 2)
             }
         }
@@ -179,7 +185,7 @@ struct AnimatedMeshGradient: View {
         .ignoresSafeArea()
         .onAppear {
             withAnimation(
-                Animation.linear(duration: 8.0)
+                Animation.easeInOut(duration: 12.0) // Slower, smoother animation
                     .repeatForever(autoreverses: true)
             ) {
                 animateGradient.toggle()

@@ -26,7 +26,11 @@ struct MainView: View {
 
     @State private var selectedDuration: TimeInterval = 3600
     @State private var showingSettings = false
-    @State private var isScanning = false
+
+    // Use NFCManager's isScanning to prevent stuck UI
+    private var isScanning: Bool {
+        nfcManager.isScanning
+    }
 
     let durations: [TimeInterval] = [
         900,    // 15 min
@@ -42,31 +46,8 @@ struct MainView: View {
             AnimatedMeshGradient()
 
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Text("LemmeGo")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                    Spacer()
-                    Button(action: { showingSettings = true }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(
-                                Circle()
-                                    .fill(.ultraThinMaterial)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                    )
-                            )
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 60)
-
                 Spacer()
+                    .frame(height: 60)
 
                 // Main content
                 VStack(spacing: 30) {
@@ -102,7 +83,7 @@ struct MainView: View {
                             .shadow(color: .white.opacity(0.5), radius: 20)
                     }
 
-                    Text("Focus Mode")
+                    Text("Phone Unlocked")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.2), radius: 4)
@@ -129,10 +110,19 @@ struct MainView: View {
 
                     // NFC scan button
                     GlassButton(
-                        title: "Tap NFC to Lock",
+                        title: "Tap Tag to Lock",
                         icon: "wave.3.right.circle.fill",
                         action: startNFCScan,
                         isDisabled: isScanning
+                    )
+                    .padding(.horizontal, 24)
+
+                    // Settings button
+                    GlassButton(
+                        title: "Settings",
+                        icon: "gearshape.fill",
+                        action: { showingSettings = true },
+                        isDisabled: false
                     )
                     .padding(.horizontal, 24)
 
@@ -140,7 +130,7 @@ struct MainView: View {
                         HStack(spacing: 12) {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            Text("Hold phone near chip...")
+                            Text("Hold phone near tag...")
                                 .font(.subheadline)
                                 .foregroundColor(.white.opacity(0.9))
                         }
@@ -154,66 +144,56 @@ struct MainView: View {
                                 )
                         )
                     }
+
+                    if let error = nfcManager.errorMessage {
+                        Text(error)
+                            .font(.subheadline)
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.red.opacity(0.2))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.red.opacity(0.5), lineWidth: 1)
+                                    )
+                            )
+                            .padding(.horizontal, 24)
+                    }
                 }
 
                 Spacer()
-
-                // Registered chips
-                if !chipStore.registeredChips.isEmpty {
-                    VStack(spacing: 12) {
-                        Text("Registered Chips")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(chipStore.registeredChips) { chip in
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "circle.hexagonpath.fill")
-                                            .font(.caption)
-                                            .foregroundColor(.cyan)
-                                        Text(chip.name)
-                                            .font(.caption)
-                                            .foregroundColor(.white)
-                                    }
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        Capsule()
-                                            .fill(Color.white.opacity(0.2))
-                                            .overlay(
-                                                Capsule()
-                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                            }
-                            .padding(.horizontal, 24)
-                        }
-                    }
-                    .padding(.bottom, 40)
-                }
             }
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
+        .onChange(of: nfcManager.errorMessage) { error in
+            // Clear error message after 5 seconds
+            if error != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                    nfcManager.errorMessage = nil
+                }
+            }
+        }
     }
 
     private func startNFCScan() {
-        isScanning = true
         nfcManager.startScanning { chipId in
             handleChipDetected(chipId)
         }
     }
 
     private func handleChipDetected(_ chipId: String) {
-        isScanning = false
-
         if chipStore.isChipRegistered(id: chipId) {
-            lockManager.startLockSession(chipId: chipId, duration: selectedDuration)
+            let success = lockManager.startLockSession(chipId: chipId, duration: selectedDuration)
+            if !success {
+                nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
+            }
         } else {
-            nfcManager.errorMessage = "This chip is not registered. Please register it first in Settings."
+            nfcManager.errorMessage = "This tag is not registered. Please register it first in Settings."
         }
     }
 
@@ -235,34 +215,22 @@ struct SettingsView: View {
     @EnvironmentObject var lockManager: LockManager
     @Environment(\.dismiss) var dismiss
 
-    @State private var isScanning = false
     @State private var showingNameAlert = false
     @State private var newChipId: String?
     @State private var chipName = ""
     @State private var showingAppPicker = false
+    @State private var permissionCheckTimer: Timer?
+
+    // Use NFCManager's isScanning to prevent stuck UI
+    private var isScanning: Bool {
+        nfcManager.isScanning
+    }
 
     var body: some View {
-        ZStack {
-            GlassBackground()
-
-            VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                    Text("Settings")
-                        .font(.title2.bold())
-                        .foregroundColor(.white)
-                    Spacer()
-                    Color.clear.frame(width: 30)
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 60)
-                .padding(.bottom, 30)
+        NavigationView {
+            ZStack {
+                GlassBackground()
+                    .ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -337,17 +305,21 @@ struct SettingsView: View {
                         }
                         
                         // Registered chips section
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("Registered NFC Chips")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Registered Tags")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
 
-                                if chipStore.registeredChips.isEmpty {
-                                    Text("No chips registered")
+                            if chipStore.registeredChips.isEmpty {
+                                GlassCard {
+                                    Text("No tags registered")
                                         .font(.subheadline)
                                         .foregroundColor(.white.opacity(0.7))
-                                } else {
+                                }
+                                .padding(.horizontal, 24)
+                            } else {
+                                List {
                                     ForEach(chipStore.registeredChips) { chip in
                                         HStack {
                                             Image(systemName: "circle.hexagonpath.fill")
@@ -362,20 +334,35 @@ struct SettingsView: View {
                                             }
                                             Spacer()
                                         }
-                                        .padding()
-                                        .background(
+                                        .padding(.vertical, 4)
+                                        .listRowBackground(
                                             RoundedRectangle(cornerRadius: 12)
-                                                .fill(Color.white.opacity(0.1))
+                                                .fill(Color.white.opacity(0.2))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 12)
+                                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                                )
+                                                .padding(.vertical, 4)
                                         )
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                            Button(role: .destructive) {
+                                                chipStore.deleteChip(id: chip.id)
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
                                     }
                                 }
+                                .listStyle(.plain)
+                                .scrollContentBackground(.hidden)
+                                .frame(height: CGFloat(chipStore.registeredChips.count * 70))
+                                .padding(.horizontal, 24)
                             }
                         }
-                        .padding(.horizontal, 24)
 
                         // Add chip button
                         GlassButton(
-                            title: "Register New Chip",
+                            title: "Register New Tag",
                             icon: "plus.circle.fill",
                             action: startRegisteringScan,
                             isDisabled: isScanning
@@ -386,7 +373,7 @@ struct SettingsView: View {
                             HStack(spacing: 12) {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                Text("Scanning for chip...")
+                                Text("Scanning for tag...")
                                     .foregroundColor(.white.opacity(0.9))
                             }
                             .padding()
@@ -416,8 +403,38 @@ struct SettingsView: View {
                     .padding(.vertical, 20)
                 }
             }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .toolbarBackground(.hidden, for: .navigationBar)
         }
-        .alert("Name Your Chip", isPresented: $showingNameAlert) {
+        .navigationViewStyle(.stack)
+        .onAppear {
+            refreshPermissions()
+            // Check permissions every 2 seconds while settings is open
+            permissionCheckTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { _ in
+                refreshPermissions()
+            }
+        }
+        .onDisappear {
+            permissionCheckTimer?.invalidate()
+            permissionCheckTimer = nil
+        }
+        .onChange(of: showingAppPicker) { _ in
+            // Refresh permissions when app picker is dismissed
+            if !showingAppPicker {
+                refreshPermissions()
+            }
+        }
+        .alert("Name Your Tag", isPresented: $showingNameAlert) {
             TextField("e.g., Work Focus", text: $chipName)
             Button("Cancel", role: .cancel) {
                 newChipId = nil
@@ -431,7 +448,7 @@ struct SettingsView: View {
                 chipName = ""
             }
         } message: {
-            Text("Give your NFC chip a memorable name")
+            Text("Give your NFC tag a memorable name")
         }
         .sheet(isPresented: $showingAppPicker) {
             if #available(iOS 16.0, *) {
@@ -442,21 +459,24 @@ struct SettingsView: View {
     }
 
     private func startRegisteringScan() {
-        isScanning = true
         nfcManager.startScanning { chipId in
             handleChipScanned(chipId)
         }
     }
 
     private func handleChipScanned(_ chipId: String) {
-        isScanning = false
-
         if chipStore.isChipRegistered(id: chipId) {
-            nfcManager.errorMessage = "This chip is already registered!"
+            nfcManager.errorMessage = "This tag is already registered!"
         } else {
             newChipId = chipId
-            chipName = "Chip \(chipStore.registeredChips.count + 1)"
+            chipName = "Tag \(chipStore.registeredChips.count + 1)"
             showingNameAlert = true
+        }
+    }
+
+    private func refreshPermissions() {
+        if #available(iOS 16.0, *), let appBlockingManager = lockManager.appBlockingManager {
+            appBlockingManager.checkAuthorization()
         }
     }
 }
