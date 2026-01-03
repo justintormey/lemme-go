@@ -20,12 +20,15 @@
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
 		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */; };
 		A100000000000000000000C9 /* AppBlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000CA /* AppBlockingManager.swift */; };
+		E8171FEC2F074AEA00C17B33 /* EmergencyUnlockTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66393538623230362D643431 /* EmergencyUnlockTracker.swift */; };
+		E8171FEE2F074BC000C17B33 /* EmergencyUnlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */; };
 		E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C862F040D7900EF951A /* FamilyControls.framework */; };
 		E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C882F040D8400EF951A /* ManagedSettings.framework */; };
 		E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		66393538623230362D643431 /* EmergencyUnlockTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockTracker.swift; sourceTree = "<group>"; };
 		A100000000000000000000A2 /* LemmeGoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemmeGoApp.swift; sourceTree = "<group>"; };
 		A100000000000000000000A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A100000000000000000000A6 /* NFCManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCManager.swift; sourceTree = "<group>"; };
@@ -41,6 +44,7 @@
 		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
 		E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStore.swift; sourceTree = "<group>"; };
+		E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockSheet.swift; sourceTree = "<group>"; };
 		E8F21C862F040D7900EF951A /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 		E8F21C882F040D8400EF951A /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
@@ -83,6 +87,8 @@
 				A100000000000000000000AE /* LockScreenView.swift */,
 				A100000000000000000000B0 /* SetupView.swift */,
 				A100000000000000000000C8 /* GlassmorphismComponents.swift */,
+				E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */,
+				66393538623230362D643431 /* EmergencyUnlockTracker.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -203,6 +209,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8171FEE2F074BC000C17B33 /* EmergencyUnlockSheet.swift in Sources */,
+				E8171FEC2F074AEA00C17B33 /* EmergencyUnlockTracker.swift in Sources */,
 				51CE3004434244D9BDB2CD4D /* BlockedAppsStore.swift in Sources */,
 				9A4A3273F9034AAC81183BF1 /* AppPickerView.swift in Sources */,
 				A100000000000000000000A3 /* ContentView.swift in Sources */,

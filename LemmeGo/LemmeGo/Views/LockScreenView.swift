@@ -4,9 +4,11 @@ struct LockScreenView: View {
     @EnvironmentObject var lockManager: LockManager
     @EnvironmentObject var nfcManager: NFCManager
     @EnvironmentObject var chipStore: NFCChipStore
+    @EnvironmentObject var emergencyTracker: EmergencyUnlockTracker
 
     @State private var currentTime = Date()
     @State private var pulse = false
+    @State private var showingEmergencyUnlock = false
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -128,6 +130,19 @@ struct LockScreenView: View {
                                 }
                                 .padding(.top, 8)
                             }
+
+                            // Show indicator for remote locks
+                            if session.isRemoteActivated {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "lock.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.blue.opacity(0.8))
+                                    Text("Remote Lock - NFC required to unlock")
+                                        .font(.caption)
+                                        .foregroundColor(.white.opacity(0.6))
+                                }
+                                .padding(.top, 4)
+                            }
                         }
                     }
                     .padding(.horizontal, 24)
@@ -145,6 +160,17 @@ struct LockScreenView: View {
                         isDisabled: isScanning
                     )
                     .padding(.horizontal, 24)
+
+                    // Emergency Unlock button
+                    if emergencyTracker.canUseEmergencyUnlock {
+                        GlassButton(
+                            title: "Emergency Unlock (\(emergencyTracker.remainingUnlocks)/5)",
+                            icon: "exclamationmark.triangle.fill",
+                            action: { showingEmergencyUnlock = true },
+                            isDark: true
+                        )
+                        .padding(.horizontal, 24)
+                    }
 
                     if isScanning {
                         HStack(spacing: 12) {
@@ -173,6 +199,11 @@ struct LockScreenView: View {
         }
         .onReceive(timer) { _ in
             currentTime = Date()
+        }
+        .sheet(isPresented: $showingEmergencyUnlock) {
+            EmergencyUnlockSheet()
+                .environmentObject(lockManager)
+                .environmentObject(emergencyTracker)
         }
     }
 

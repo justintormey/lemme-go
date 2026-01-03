@@ -108,13 +108,22 @@ struct MainView: View {
                     }
                     .padding(.horizontal, 24)
 
-                    // NFC scan button
-                    GlassButton(
-                        title: "Tap Tag to Lock",
-                        icon: "wave.3.right.circle.fill",
-                        action: startNFCScan,
-                        isDisabled: isScanning
-                    )
+                    // Dual lock buttons
+                    HStack(spacing: 16) {
+                        GlassButton(
+                            title: "NFC Lock",
+                            icon: "wave.3.right.circle.fill",
+                            action: startNFCScan,
+                            isDisabled: isScanning
+                        )
+
+                        GlassButton(
+                            title: "Lock Now",
+                            icon: "lock.fill",
+                            action: startRemoteLock,
+                            isDisabled: false
+                        )
+                    }
                     .padding(.horizontal, 24)
 
                     // Settings button
@@ -197,6 +206,20 @@ struct MainView: View {
         }
     }
 
+    private func startRemoteLock() {
+        guard !chipStore.registeredChips.isEmpty else {
+            nfcManager.errorMessage = "Register an NFC tag first to use remote lock"
+            return
+        }
+
+        let chipId = chipStore.registeredChips[0].id
+        let success = lockManager.startRemoteLockSession(chipId: chipId, duration: selectedDuration)
+
+        if !success {
+            nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
+        }
+    }
+
     private func formatDuration(_ seconds: TimeInterval) -> String {
         let hours = Int(seconds) / 3600
         let minutes = Int(seconds) / 60 % 60
@@ -213,6 +236,7 @@ struct SettingsView: View {
     @EnvironmentObject var chipStore: NFCChipStore
     @EnvironmentObject var nfcManager: NFCManager
     @EnvironmentObject var lockManager: LockManager
+    @EnvironmentObject var emergencyTracker: EmergencyUnlockTracker
     @Environment(\.dismiss) var dismiss
 
     @State private var showingNameAlert = false
@@ -382,6 +406,32 @@ struct SettingsView: View {
                                     .fill(.ultraThinMaterial)
                             )
                         }
+
+                        // Emergency Unlock status
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Image(systemName: "exclamationmark.shield.fill")
+                                        .foregroundColor(.orange)
+                                    Text("Emergency Unlocks")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                }
+
+                                Text("\(emergencyTracker.remainingUnlocks) of 5 remaining this week")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.7))
+
+                                if !emergencyTracker.currentWeekUnlocks.isEmpty {
+                                    Divider()
+                                        .background(Color.white.opacity(0.3))
+                                    Text("Used: \(emergencyTracker.currentWeekUnlocks.count) times this week")
+                                        .font(.caption)
+                                        .foregroundColor(.white.opacity(0.6))
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 24)
 
                         // About section
                         GlassCard {

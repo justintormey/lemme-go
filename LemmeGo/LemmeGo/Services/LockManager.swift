@@ -37,7 +37,6 @@ class LockManager: ObservableObject {
             startLock()
         } else {
             currentSession = nil
-            setAppIcon(to: nil)
         }
     }
 
@@ -62,7 +61,6 @@ class LockManager: ObservableObject {
         currentSession = session
         saveSession()
         startLock()
-        setAppIcon(to: "AppIcon-Locked")
 
         // Block apps - this is REQUIRED functionality
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
@@ -72,6 +70,33 @@ class LockManager: ObservableObject {
                     blockingManager.blockSelectedApps(store.selection)
                 }
                 // If no apps selected, user should configure in settings
+            }
+        }
+
+        return true
+    }
+
+    // Start a lock session without NFC scan (remote activation)
+    // Still requires NFC tag to unlock - hybrid approach
+    func startRemoteLockSession(chipId: String, duration: TimeInterval) -> Bool {
+        // Check Screen Time authorization
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+            blockingManager.checkAuthorization()
+            if !blockingManager.isAuthorized {
+                return false
+            }
+        }
+
+        // Create session with remote activation flag
+        let session = LockSession(chipId: chipId, duration: duration, isRemoteActivated: true)
+        currentSession = session
+        saveSession()
+        startLock()
+
+        // Block apps using Screen Time API
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
+            if blockingManager.isAuthorized && store.hasBlockedApps {
+                blockingManager.blockSelectedApps(store.selection)
             }
         }
 
@@ -89,7 +114,6 @@ class LockManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         clearSession()
-        setAppIcon(to: nil)
     }
 
     private func startLock() {
@@ -131,20 +155,6 @@ class LockManager: ObservableObject {
             return blockingManager.authorizationError
         }
         return "Screen Time API not available on this iOS version"
-    }
-
-    private func setAppIcon(to iconName: String?) {
-        guard UIApplication.shared.supportsAlternateIcons else { return }
-
-        UIApplication.shared.setAlternateIconName(iconName) { error in
-            if let error = error {
-                // Silently ignore cancellation errors (expected when app is active)
-                let nsError = error as NSError
-                if nsError.code != 3072 { // NSUserCancelledError
-                    // Icon change failed, but not critical to functionality
-                }
-            }
-        }
     }
 
     private func saveSession() {
