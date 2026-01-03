@@ -4,6 +4,7 @@ import UIKit
 import FamilyControls
 import ManagedSettings
 import Combine
+import UserNotifications
 
 class LockManager: ObservableObject {
     @Published var currentSession: LockSession?
@@ -33,16 +34,59 @@ class LockManager: ObservableObject {
         }
 
         loadSession()
-        if let session = currentSession, session.isActive {
-            startLock()
-        } else {
-            currentSession = nil
+        if let session = currentSession {
+            if session.isActive {
+                // Session is still active - resume lock
+                startLock()
+            } else {
+                // Session expired while app was closed - clean up properly!
+                print("⚠️ Found expired session on app launch - cleaning up")
+                endLockSession()
+            }
         }
+
+        // Monitor app lifecycle events
+        setupLifecycleObservers()
     }
 
     deinit {
+        NotificationCenter.default.removeObserver(self)
         timer?.invalidate()
         timer = nil
+    }
+
+    private func setupLifecycleObservers() {
+        // Check session when app comes to foreground
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+
+        // Optional: Log when app goes to background
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleAppWillEnterForeground() {
+        print("📱 App entering foreground - checking session status")
+
+        // Check if session expired while app was backgrounded
+        if let session = currentSession, !session.isActive {
+            print("⚠️ Session expired while backgrounded - ending session")
+            endLockSession()
+        }
+    }
+
+    @objc private func handleAppDidEnterBackground() {
+        print("📱 App entering background - session will continue")
+        // Timer is automatically suspended by iOS
+        // Session will be checked when app returns to foreground
     }
 
     func startLockSession(chipId: String, duration: TimeInterval) -> Bool {
@@ -61,6 +105,9 @@ class LockManager: ObservableObject {
         currentSession = session
         saveSession()
         startLock()
+
+        // Schedule unlock notification
+        scheduleUnlockNotification(for: duration)
 
         // Block apps - this is REQUIRED functionality
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
@@ -93,6 +140,9 @@ class LockManager: ObservableObject {
         saveSession()
         startLock()
 
+        // Schedule unlock notification
+        scheduleUnlockNotification(for: duration)
+
         // Block apps using Screen Time API
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
             if blockingManager.isAuthorized && store.hasBlockedApps {
@@ -104,6 +154,9 @@ class LockManager: ObservableObject {
     }
 
     func endLockSession() {
+        // Cancel notification since session ended
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+
         // Unblock apps
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             blockingManager.unblockAllApps()
@@ -114,6 +167,36 @@ class LockManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         clearSession()
+    }
+
+    private func scheduleUnlockNotification(for duration: TimeInterval) {
+        // Cancel any existing notifications
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+
+        let content = UNMutableNotificationContent()
+        content.title = "LemmeGo"
+        content.body = "Your focus session has ended. Apps are now unlocked!"
+        content.sound = .default
+        content.categoryIdentifier = "UNLOCK"
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: duration,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: "session-unlock",
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ Failed to schedule notification: \(error)")
+            } else {
+                print("✅ Unlock notification scheduled for \(duration) seconds")
+            }
+        }
     }
 
     private func startLock() {
