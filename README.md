@@ -6,7 +6,8 @@ An iOS app that helps you stay focused by locking your phone using NFC tags. Tap
 
 - **NFC-Powered Locking**: Use any NFC tag to lock your phone
 - **Remote Lock Activation**: Start lock sessions without NFC scan (hybrid mode - still need NFC to unlock)
-- **Customizable Durations**: Choose lock periods from 15 minutes to 8 hours
+- **Customizable Durations**: Set any duration with Hours/Minutes/Seconds picker (0-23h 59m 59s)
+- **Unlimited Lock Mode**: Lock indefinitely until manually unlocked with NFC or emergency unlock
 - **App Blocking**: Block selected apps and websites during focus sessions using Screen Time API
 - **Multiple Tags**: Register and manage multiple NFC tags
 - **Lock Screen**: Full-screen lock interface that tracks session time
@@ -27,13 +28,15 @@ An iOS app that helps you stay focused by locking your phone using NFC tags. Tap
 1. Grant Screen Time permission (required for app blocking)
 2. Select which apps you want to block during focus sessions
 3. Register your NFC tag(s) in the app
-4. Choose your desired lock duration (15 min - 8 hours)
+4. Choose your desired lock duration:
+   - Use the H:M:S picker to set any time (0-23h 59m 59s)
+   - OR toggle "Unlimited Duration" for indefinite lock
 5. Start a lock session:
    - **NFC Lock**: Tap your phone to the NFC tag to start (requires NFC to unlock)
    - **Lock Now**: Start immediately without NFC (still requires NFC to unlock)
 6. Your phone enters lock mode and blocks selected apps
 7. Unlock by:
-   - Waiting for the timer to expire (automatic unlock)
+   - Waiting for the timer to expire (automatic unlock - timed sessions only)
    - Tapping your registered NFC tag
    - Using Emergency Unlock (limited to 5 uses per week)
 
@@ -114,26 +117,36 @@ These are configured in:
 ### Starting a Focus Session
 
 1. Open the app
-2. Select your desired lock duration using the wheel picker
+2. Set your desired lock duration:
+   - Use the **H:M:S wheel pickers** to select hours (0-23), minutes (0-59), and seconds (0-59)
+   - OR toggle **"Unlimited Duration"** for an indefinite lock (no automatic unlock)
 3. Choose how to start the lock:
    - **NFC Lock**: Tap the button and hold your phone near your registered NFC tag
    - **Lock Now**: Tap to start immediately without NFC (you'll still need NFC to unlock)
 4. The app enters lock mode and blocks your selected apps
-5. A countdown timer shows remaining lock time
-6. You'll receive a notification when the session ends
+5. View your session:
+   - **Timed sessions**: Countdown timer shows remaining time with progress bar
+   - **Unlimited sessions**: Display shows "∞" symbol - no automatic unlock
+6. You'll receive a notification when timed sessions complete
 
 ### Ending a Focus Session
 
-**Normal Unlock:**
+**Timed Sessions:**
 
 - Wait for the timer to expire (apps unlock automatically when you reopen the app), or
-- Tap "Tap Tag to Unlock" and hold your phone near the same tag
+- Tap "Tap Tag to Unlock" and hold your phone near the same tag, or
+- Use Emergency Unlock (limited to 5 uses per week)
 
-**Emergency Unlock:**
+**Unlimited Sessions:**
 
-- Tap "Emergency Unlock" on the lock screen (limited to 5 uses per week)
+- Tap "Tap Tag to Unlock" and hold your phone near the same tag (only way to unlock), or
+- Use Emergency Unlock (limited to 5 uses per week)
+
+**Emergency Unlock (All Sessions):**
+
+- Tap "Emergency Unlock" on the lock screen
 - Confirm the unlock in the warning dialog
-- Your remaining emergency unlocks will be displayed
+- Your remaining emergency unlocks will be displayed (5 per week, resets Monday)
 
 ### Managing Tags
 
@@ -185,9 +198,23 @@ LemmeGo uses Apple's **Screen Time API** (FamilyControls framework) to block app
 - Apps are blocked using `ManagedSettings` shields
 - Blocks persist even if the app is closed or device restarts
 - Only selected apps are blocked (not the entire phone)
-- Blocks are automatically removed when the session ends
+- Blocks are automatically removed when the session ends (timed) or when manually unlocked (unlimited)
 
 This is a **true app-blocking solution**, not just a UI lock.
+
+### Lock Duration Options
+
+**Timed Sessions:**
+- Set any duration using H:M:S pickers (0-23h 59m 59s)
+- Timer counts down automatically
+- Apps unlock when timer expires (even if app is closed)
+- Notification fires when session completes
+
+**Unlimited Sessions:**
+- Toggle "Unlimited Duration" to lock indefinitely
+- No automatic unlock - requires manual unlock
+- No notifications (since there's no end time)
+- Useful for deep work or extended focus periods
 
 ### NFC Implementation
 

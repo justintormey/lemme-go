@@ -85,39 +85,62 @@ struct LockScreenView: View {
                 if let session = lockManager.currentSession {
                     GlassCard(isDark: true) {
                         VStack(spacing: 20) {
-                            Text("Time Remaining")
-                                .font(.subheadline)
-                                .foregroundColor(.white.opacity(0.8))
-
-                            Text(lockManager.formatTime(session.remainingTime))
-                                .font(.system(size: 64, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                                .monospacedDigit()
-                                .id(currentTime) // Force refresh when currentTime updates
-
-                            // Progress bar
-                            GeometryReader { geometry in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.white.opacity(0.2))
-                                        .frame(height: 8)
-
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [Color.red, Color.purple, Color.orange],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                        .frame(
-                                            width: geometry.size.width * CGFloat(1.0 - (session.remainingTime / session.duration)),
-                                            height: 8
-                                        )
-                                        .animation(.linear(duration: 1), value: currentTime)
+                            if session.isUnlimited {
+                                // Unlimited session display
+                                HStack(spacing: 12) {
+                                    Image(systemName: "infinity")
+                                        .font(.title2)
+                                        .foregroundColor(.cyan.opacity(0.8))
+                                    Text("Unlimited Lock")
+                                        .font(.subheadline)
+                                        .foregroundColor(.white.opacity(0.8))
                                 }
+
+                                Text("∞")
+                                    .font(.system(size: 80, weight: .bold, design: .rounded))
+                                    .foregroundColor(.cyan)
+                                    .shadow(color: .cyan.opacity(0.5), radius: 20)
+
+                                Text("No automatic unlock")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .padding(.top, 8)
+                            } else {
+                                // Timed session display
+                                Text("Time Remaining")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.8))
+
+                                Text(lockManager.formatTime(session.remainingTime))
+                                    .font(.system(size: 64, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .monospacedDigit()
+                                    .id(currentTime) // Force refresh when currentTime updates
+
+                                // Progress bar
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color.white.opacity(0.2))
+                                            .frame(height: 8)
+
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [Color.red, Color.purple, Color.orange],
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+                                            .frame(
+                                                width: geometry.size.width * CGFloat(1.0 - (session.remainingTime / session.duration)),
+                                                height: 8
+                                            )
+                                            .animation(.linear(duration: 1), value: currentTime)
+                                    }
+                                }
+                                .frame(height: 8)
                             }
-                            .frame(height: 8)
 
                             if let chip = chipStore.getChip(id: session.chipId) {
                                 HStack(spacing: 6) {

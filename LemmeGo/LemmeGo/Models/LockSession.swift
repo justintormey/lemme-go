@@ -6,30 +6,44 @@ struct LockSession: Codable, Identifiable {
     let startTime: Date
     let duration: TimeInterval
     var isRemoteActivated: Bool
+    var isUnlimited: Bool
 
     var endTime: Date {
-        startTime.addingTimeInterval(duration)
+        if isUnlimited {
+            // Return a date far in the future for unlimited sessions
+            return Date.distantFuture
+        }
+        return startTime.addingTimeInterval(duration)
     }
 
     var isActive: Bool {
-        Date() < endTime
+        if isUnlimited {
+            // Unlimited sessions are always active until manually unlocked
+            return true
+        }
+        return Date() < endTime
     }
 
     var remainingTime: TimeInterval {
-        max(0, endTime.timeIntervalSinceNow)
+        if isUnlimited {
+            // Return infinity for unlimited sessions
+            return .infinity
+        }
+        return max(0, endTime.timeIntervalSinceNow)
     }
 
-    init(chipId: String, duration: TimeInterval, isRemoteActivated: Bool = false) {
+    init(chipId: String, duration: TimeInterval, isRemoteActivated: Bool = false, isUnlimited: Bool = false) {
         self.id = UUID()
         self.chipId = chipId
         self.startTime = Date()
         self.duration = duration
         self.isRemoteActivated = isRemoteActivated
+        self.isUnlimited = isUnlimited
     }
 
     // MARK: - Codable Migration Support
     enum CodingKeys: String, CodingKey {
-        case id, chipId, startTime, duration, isRemoteActivated
+        case id, chipId, startTime, duration, isRemoteActivated, isUnlimited
     }
 
     init(from decoder: Decoder) throws {
@@ -38,8 +52,9 @@ struct LockSession: Codable, Identifiable {
         chipId = try container.decode(String.self, forKey: .chipId)
         startTime = try container.decode(Date.self, forKey: .startTime)
         duration = try container.decode(TimeInterval.self, forKey: .duration)
-        // Migration: This property may not exist in older saved sessions
+        // Migration: These properties may not exist in older saved sessions
         isRemoteActivated = (try? container.decode(Bool.self, forKey: .isRemoteActivated)) ?? false
+        isUnlimited = (try? container.decode(Bool.self, forKey: .isUnlimited)) ?? false
     }
 }
 

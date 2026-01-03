@@ -20,6 +20,8 @@ class LockManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
+        print("🔧 LockManager init() called")
+
         // Initialize app blocking manager on iOS 16+
         if #available(iOS 16.0, *) {
             let manager = AppBlockingManager()
@@ -35,14 +37,28 @@ class LockManager: ObservableObject {
 
         loadSession()
         if let session = currentSession {
+            let now = Date()
+            let endTime = session.endTime
+            let isActive = session.isActive
+
+            print("📊 Session found:")
+            print("   - Start: \(session.startTime)")
+            print("   - End: \(endTime)")
+            print("   - Now: \(now)")
+            print("   - IsActive: \(isActive)")
+            print("   - Remaining: \(session.remainingTime)s")
+
             if session.isActive {
                 // Session is still active - resume lock
+                print("✅ Session still active - resuming lock")
                 startLock()
             } else {
                 // Session expired while app was closed - clean up properly!
                 print("⚠️ Found expired session on app launch - cleaning up")
-                endLockSession()
+                endLockSession(isManualUnlock: false)  // Let notification fire (if not already fired)
             }
+        } else {
+            print("📊 No existing session found")
         }
 
         // Monitor app lifecycle events
@@ -79,7 +95,7 @@ class LockManager: ObservableObject {
         // Check if session expired while app was backgrounded
         if let session = currentSession, !session.isActive {
             print("⚠️ Session expired while backgrounded - ending session")
-            endLockSession()
+            endLockSession(isManualUnlock: false)  // Let notification fire (if not already fired)
         }
     }
 
@@ -89,25 +105,40 @@ class LockManager: ObservableObject {
         // Session will be checked when app returns to foreground
     }
 
-    func startLockSession(chipId: String, duration: TimeInterval) -> Bool {
+    func startLockSession(chipId: String, duration: TimeInterval, isUnlimited: Bool = false) -> Bool {
+        print("🔒 startLockSession() called - NFC LOCK")
+        print("   - chipId: \(chipId)")
+        print("   - duration: \(duration)s")
+        print("   - isUnlimited: \(isUnlimited)")
+
         // Check Screen Time authorization before starting lock
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             // Always check current authorization status
             blockingManager.checkAuthorization()
 
             if !blockingManager.isAuthorized {
+                print("   ❌ Screen Time not authorized")
                 // Permission was revoked - cannot lock
                 return false
             }
+            print("   ✅ Screen Time authorized")
         }
 
-        let session = LockSession(chipId: chipId, duration: duration)
+        let session = LockSession(chipId: chipId, duration: duration, isUnlimited: isUnlimited)
+        print("   📝 Created session: \(session.id)")
         currentSession = session
         saveSession()
+        print("   💾 Session saved")
         startLock()
+        print("   ⏰ Lock started (timer running)")
 
-        // Schedule unlock notification
-        scheduleUnlockNotification(for: duration)
+        // Schedule unlock notification (skip for unlimited sessions)
+        if !isUnlimited {
+            print("   🔔 Scheduling notification for \(duration)s")
+            scheduleUnlockNotification(for: duration)
+        } else {
+            print("   ⏸️  Skipping notification (unlimited session)")
+        }
 
         // Block apps - this is REQUIRED functionality
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
@@ -115,51 +146,86 @@ class LockManager: ObservableObject {
                 // Use the user's selected apps from BlockedAppsStore
                 if store.hasBlockedApps {
                     blockingManager.blockSelectedApps(store.selection)
+                    print("   🚫 Apps blocked")
+                } else {
+                    print("   ⚠️ No apps selected to block")
                 }
                 // If no apps selected, user should configure in settings
             }
         }
 
+        print("   ✅ startLockSession() completed successfully")
         return true
     }
 
     // Start a lock session without NFC scan (remote activation)
     // Still requires NFC tag to unlock - hybrid approach
-    func startRemoteLockSession(chipId: String, duration: TimeInterval) -> Bool {
+    func startRemoteLockSession(chipId: String, duration: TimeInterval, isUnlimited: Bool = false) -> Bool {
+        print("🔒 startRemoteLockSession() called - LOCK NOW")
+        print("   - chipId: \(chipId)")
+        print("   - duration: \(duration)s")
+        print("   - isUnlimited: \(isUnlimited)")
+
         // Check Screen Time authorization
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
             blockingManager.checkAuthorization()
             if !blockingManager.isAuthorized {
+                print("   ❌ Screen Time not authorized")
                 return false
             }
+            print("   ✅ Screen Time authorized")
         }
 
         // Create session with remote activation flag
-        let session = LockSession(chipId: chipId, duration: duration, isRemoteActivated: true)
+        let session = LockSession(chipId: chipId, duration: duration, isRemoteActivated: true, isUnlimited: isUnlimited)
+        print("   📝 Created session: \(session.id)")
         currentSession = session
         saveSession()
+        print("   💾 Session saved")
         startLock()
+        print("   ⏰ Lock started (timer running)")
 
-        // Schedule unlock notification
-        scheduleUnlockNotification(for: duration)
+        // Schedule unlock notification (skip for unlimited sessions)
+        if !isUnlimited {
+            print("   🔔 Scheduling notification for \(duration)s")
+            scheduleUnlockNotification(for: duration)
+        } else {
+            print("   ⏸️  Skipping notification (unlimited session)")
+        }
 
         // Block apps using Screen Time API
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
             if blockingManager.isAuthorized && store.hasBlockedApps {
                 blockingManager.blockSelectedApps(store.selection)
+                print("   🚫 Apps blocked")
+            } else {
+                print("   ⚠️ No apps selected to block or not authorized")
             }
         }
 
+        print("   ✅ startRemoteLockSession() completed successfully")
         return true
     }
 
-    func endLockSession() {
-        // Cancel notification since session ended
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    func endLockSession(isManualUnlock: Bool = true) {
+        print("🔓 endLockSession() called (manual: \(isManualUnlock))")
+
+        // Only cancel notification for manual unlocks (NFC/emergency)
+        // For automatic timer unlocks, let the notification fire
+        if isManualUnlock {
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            print("   ✅ Cancelled pending notifications (manual unlock)")
+        } else {
+            print("   ⏰ Keeping notification (automatic unlock - will fire)")
+        }
 
         // Unblock apps
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+            print("   🔓 Calling unblockAllApps()")
             blockingManager.unblockAllApps()
+            print("   ✅ unblockAllApps() completed")
+        } else {
+            print("   ⚠️ AppBlockingManager not available")
         }
 
         currentSession = nil
@@ -167,6 +233,7 @@ class LockManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         clearSession()
+        print("   ✅ Session cleared, isLocked = false")
     }
 
     private func scheduleUnlockNotification(for duration: TimeInterval) {
@@ -200,6 +267,7 @@ class LockManager: ObservableObject {
     }
 
     private func startLock() {
+        print("⏰ startLock() - Setting up timer")
         isLocked = true
 
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -207,13 +275,17 @@ class LockManager: ObservableObject {
 
             if let session = self.currentSession {
                 if !session.isActive {
-                    self.endLockSession()
+                    print("⏰ Timer detected session expired - auto-unlocking")
+                    self.endLockSession(isManualUnlock: false)  // Let notification fire
                 }
             }
         }
         // Add timer to common run loop mode so it fires during scrolling and other UI interactions
         if let timer = timer {
             RunLoop.current.add(timer, forMode: .common)
+            print("⏰ Timer created and added to RunLoop")
+        } else {
+            print("❌ Failed to create timer!")
         }
     }
 

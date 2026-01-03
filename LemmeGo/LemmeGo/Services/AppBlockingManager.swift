@@ -93,10 +93,15 @@ class AppBlockingManager: ObservableObject {
     }
 
     func unblockAllApps() {
+        print("🔓 AppBlockingManager.unblockAllApps() called")
         // Clear all shields
         store.shield.applications = nil
+        print("   ✅ Cleared applications shield")
         store.shield.applicationCategories = nil
+        print("   ✅ Cleared applicationCategories shield")
         store.shield.webDomains = nil
+        print("   ✅ Cleared webDomains shield")
+        print("🔓 All shields cleared!")
     }
 
     // MARK: - Device Activity Scheduling

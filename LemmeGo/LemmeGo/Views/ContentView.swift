@@ -24,7 +24,10 @@ struct MainView: View {
     @EnvironmentObject var nfcManager: NFCManager
     @EnvironmentObject var chipStore: NFCChipStore
 
-    @State private var selectedDuration: TimeInterval = 3600
+    @State private var selectedHours: Int = 1
+    @State private var selectedMinutes: Int = 0
+    @State private var selectedSeconds: Int = 0
+    @State private var isUnlimitedDuration: Bool = false
     @State private var showingSettings = false
 
     // Use NFCManager's isScanning to prevent stuck UI
@@ -32,14 +35,14 @@ struct MainView: View {
         nfcManager.isScanning
     }
 
-    let durations: [TimeInterval] = [
-        900,    // 15 min
-        1800,   // 30 min
-        3600,   // 1 hour
-        7200,   // 2 hours
-        14400,  // 4 hours
-        28800   // 8 hours
-    ]
+    // Calculate total duration from hours, minutes, and seconds
+    // Returns 0 for unlimited duration (special case)
+    private var selectedDuration: TimeInterval {
+        if isUnlimitedDuration {
+            return 0  // 0 = unlimited
+        }
+        return TimeInterval(selectedHours * 3600 + selectedMinutes * 60 + selectedSeconds)
+    }
 
     var body: some View {
         ZStack {
@@ -95,15 +98,72 @@ struct MainView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
 
-                            Picker("Duration", selection: $selectedDuration) {
-                                ForEach(durations, id: \.self) { duration in
-                                    Text(formatDuration(duration))
-                                        .tag(duration)
+                            // Unlimited toggle
+                            Toggle(isOn: $isUnlimitedDuration) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "infinity")
+                                        .foregroundColor(.white)
+                                    Text("Unlimited Duration")
                                         .foregroundColor(.white)
                                 }
                             }
-                            .pickerStyle(.wheel)
+                            .toggleStyle(SwitchToggleStyle(tint: .cyan))
+
+                            // Time pickers (disabled when unlimited)
+                            HStack(spacing: 0) {
+                                // Hours picker
+                                Picker("Hours", selection: $selectedHours) {
+                                    ForEach(0...23, id: \.self) { hour in
+                                        Text("\(hour)")
+                                            .foregroundColor(.white)
+                                            .tag(hour)
+                                    }
+                                }
+                                .pickerStyle(.wheel)
+                                .frame(width: 70)
+                                .disabled(isUnlimitedDuration)
+
+                                Text("h")
+                                    .foregroundColor(.white)
+                                    .font(.title3)
+                                    .frame(width: 30)
+
+                                // Minutes picker
+                                Picker("Minutes", selection: $selectedMinutes) {
+                                    ForEach(0...59, id: \.self) { minute in
+                                        Text("\(minute)")
+                                            .foregroundColor(.white)
+                                            .tag(minute)
+                                    }
+                                }
+                                .pickerStyle(.wheel)
+                                .frame(width: 70)
+                                .disabled(isUnlimitedDuration)
+
+                                Text("m")
+                                    .foregroundColor(.white)
+                                    .font(.title3)
+                                    .frame(width: 30)
+
+                                // Seconds picker
+                                Picker("Seconds", selection: $selectedSeconds) {
+                                    ForEach(0...59, id: \.self) { second in
+                                        Text("\(second)")
+                                            .foregroundColor(.white)
+                                            .tag(second)
+                                    }
+                                }
+                                .pickerStyle(.wheel)
+                                .frame(width: 70)
+                                .disabled(isUnlimitedDuration)
+
+                                Text("s")
+                                    .foregroundColor(.white)
+                                    .font(.title3)
+                                    .frame(width: 30)
+                            }
                             .frame(height: 120)
+                            .opacity(isUnlimitedDuration ? 0.4 : 1.0)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -197,7 +257,11 @@ struct MainView: View {
 
     private func handleChipDetected(_ chipId: String) {
         if chipStore.isChipRegistered(id: chipId) {
-            let success = lockManager.startLockSession(chipId: chipId, duration: selectedDuration)
+            let success = lockManager.startLockSession(
+                chipId: chipId,
+                duration: selectedDuration,
+                isUnlimited: isUnlimitedDuration
+            )
             if !success {
                 nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
             }
@@ -213,21 +277,14 @@ struct MainView: View {
         }
 
         let chipId = chipStore.registeredChips[0].id
-        let success = lockManager.startRemoteLockSession(chipId: chipId, duration: selectedDuration)
+        let success = lockManager.startRemoteLockSession(
+            chipId: chipId,
+            duration: selectedDuration,
+            isUnlimited: isUnlimitedDuration
+        )
 
         if !success {
             nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
-        }
-    }
-
-    private func formatDuration(_ seconds: TimeInterval) -> String {
-        let hours = Int(seconds) / 3600
-        let minutes = Int(seconds) / 60 % 60
-
-        if hours > 0 {
-            return "\(hours)h \(minutes > 0 ? "\(minutes)m" : "")"
-        } else {
-            return "\(minutes)m"
         }
     }
 }
