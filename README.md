@@ -5,11 +5,14 @@ An iOS app that helps you stay focused by locking your phone using NFC tags. Tap
 ## Features
 
 - **NFC-Powered Locking**: Use any NFC tag to lock your phone
+- **Remote Lock Activation**: Start lock sessions without NFC scan (hybrid mode - still need NFC to unlock)
 - **Customizable Durations**: Choose lock periods from 15 minutes to 8 hours
 - **App Blocking**: Block selected apps and websites during focus sessions using Screen Time API
 - **Multiple Tags**: Register and manage multiple NFC tags
 - **Lock Screen**: Full-screen lock interface that tracks session time
-- **Persistent Sessions**: Lock sessions survive app restarts
+- **Persistent Sessions**: Lock sessions survive app restarts and automatically unlock when timer expires
+- **Emergency Unlock**: Limited bypass option (5 uses per week, resets Monday)
+- **Session End Notifications**: Get alerted when your focus session completes
 
 ## Requirements
 
@@ -25,9 +28,14 @@ An iOS app that helps you stay focused by locking your phone using NFC tags. Tap
 2. Select which apps you want to block during focus sessions
 3. Register your NFC tag(s) in the app
 4. Choose your desired lock duration (15 min - 8 hours)
-5. Tap your phone to the NFC tag to start the lock session
+5. Start a lock session:
+   - **NFC Lock**: Tap your phone to the NFC tag to start (requires NFC to unlock)
+   - **Lock Now**: Start immediately without NFC (still requires NFC to unlock)
 6. Your phone enters lock mode and blocks selected apps
-7. Tap the same tag again to unlock, or wait for the timer to expire
+7. Unlock by:
+   - Waiting for the timer to expire (automatic unlock)
+   - Tapping your registered NFC tag
+   - Using Emergency Unlock (limited to 5 uses per week)
 
 ## Important: Screen Time Permission
 
@@ -107,16 +115,25 @@ These are configured in:
 
 1. Open the app
 2. Select your desired lock duration using the wheel picker
-3. Tap "Tap Tag to Lock"
-4. Hold your phone near your registered NFC tag
-5. The app enters lock mode and blocks your selected apps
-6. A countdown timer shows remaining lock time
+3. Choose how to start the lock:
+   - **NFC Lock**: Tap the button and hold your phone near your registered NFC tag
+   - **Lock Now**: Tap to start immediately without NFC (you'll still need NFC to unlock)
+4. The app enters lock mode and blocks your selected apps
+5. A countdown timer shows remaining lock time
+6. You'll receive a notification when the session ends
 
 ### Ending a Focus Session
 
 **Normal Unlock:**
-- Wait for the timer to expire, or
+
+- Wait for the timer to expire (apps unlock automatically when you reopen the app), or
 - Tap "Tap Tag to Unlock" and hold your phone near the same tag
+
+**Emergency Unlock:**
+
+- Tap "Emergency Unlock" on the lock screen (limited to 5 uses per week)
+- Confirm the unlock in the warning dialog
+- Your remaining emergency unlocks will be displayed
 
 ### Managing Tags
 
@@ -209,11 +226,13 @@ These are intentional limitations or inherent to iOS that cannot be fixed:
 
 3. **Force Quit / Device Restart Behavior**
    - If the app is force-quit or device restarts while locked:
-     - App blocks persist until the app is reopened
-     - Timer continues counting down but won't auto-unlock until app reopens
+     - App blocks persist until the session expires or app is reopened
+     - Timer continues counting down based on the original expiration time
+     - When you reopen the app, it automatically checks if the session expired and unlocks apps
+     - You'll receive a notification when the session ends (even if app is closed)
    - **Why this exists**: iOS terminates background timers when apps are force-quit
-   - **Impact**: Apps stay blocked as intended, but won't auto-unlock at expiration until app is opened
-   - **Workaround**: Open the app to check remaining time or unlock
+   - **Current behavior**: Apps stay blocked as intended, and auto-unlock when you next open the app after expiration
+   - **Note**: Opening the app before expiration will show the remaining time and allow manual unlock
 
 4. **TestFlight/App Store Distribution Limitation**
    - Family Controls requires Apple's special approval for distribution
@@ -243,17 +262,24 @@ These are intentional limitations or inherent to iOS that cannot be fixed:
 - LemmeGo does not transmit any data over the network
 - Screen Time permission grants visibility to installed apps (but LemmeGo doesn't monitor usage)
 
-## "Emergency" Unlock
+## Emergency Unlock
 
-There is **no built-in emergency unlock button**. This is intentional - the lock is meant to help you commit to focus time.
+LemmeGo includes a **limited emergency unlock feature** for genuine emergencies:
 
-If you absolutely need to unlock early:
+- **5 emergency unlocks per week** (resets every Monday)
+- Available from the lock screen when in an active session
+- Requires confirmation to prevent accidental use
+- Tracks remaining uses to encourage commitment
+
+### Alternative Bypass Methods
+
+If you've exhausted your emergency unlocks, these methods are still available:
 1. **Wait for timer to expire** (recommended)
 2. Go to iOS Settings > Screen Time and disable it entirely
 3. Go to iOS Settings > Screen Time > LemmeGo and revoke permission
 4. Delete the LemmeGo app
 
-These methods require enough friction that they break the commitment, but are available if truly needed.
+These methods require significant friction and break the commitment, but ensure you're never truly locked out.
 
 ## Troubleshooting
 
