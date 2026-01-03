@@ -170,6 +170,7 @@ struct GlassButton: View {
 // MARK: - Animated Gradient Mesh
 struct AnimatedMeshGradient: View {
     @State private var animateGradient = false
+    @State private var isActive = false
 
     var body: some View {
         LinearGradient(
@@ -184,12 +185,19 @@ struct AnimatedMeshGradient: View {
         )
         .ignoresSafeArea()
         .onAppear {
+            guard !isActive else { return }
+            isActive = true
             withAnimation(
-                Animation.easeInOut(duration: 12.0) // Slower, smoother animation
+                Animation.easeInOut(duration: 12.0)
                     .repeatForever(autoreverses: true)
             ) {
                 animateGradient.toggle()
             }
+        }
+        .onDisappear {
+            // Stop animation by resetting state
+            isActive = false
+            animateGradient = false
         }
     }
 }
