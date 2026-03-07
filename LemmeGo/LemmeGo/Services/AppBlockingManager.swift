@@ -1,7 +1,6 @@
 import Foundation
 import FamilyControls
 import ManagedSettings
-import DeviceActivity
 
 @available(iOS 16.0, *)
 class AppBlockingManager: ObservableObject {
@@ -9,7 +8,10 @@ class AppBlockingManager: ObservableObject {
     @Published var authorizationError: String?
 
     private let center = AuthorizationCenter.shared
-    private let store = ManagedSettingsStore()
+    // Use a named ManagedSettingsStore for reliable persistence across app restarts.
+    // The default (unnamed) store can behave inconsistently; a named store ensures
+    // the shields survive process termination and relaunch.
+    private let store = ManagedSettingsStore(named: .lemmego)
 
     init() {
         checkAuthorization()
@@ -53,80 +55,73 @@ class AppBlockingManager: ObservableObject {
 
     // MARK: - App Blocking
 
-    func blockAllApps(except allowedBundleIDs: Set<String> = []) {
-        guard isAuthorized else {
-            authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
-            return
-        }
-
-        // Block all applications except system apps and LemmeGo
-        // Note: To block all apps, we need to use FamilyActivitySelection
-        // For now, we'll use specific blocking approach
-        store.shield.applications = nil // Reset first
-        store.shield.applicationCategories = .all(except: Set())
-        store.shield.webDomains = nil
-    }
-
-    func blockSpecificApps(_ tokens: Set<ApplicationToken>) {
-        guard isAuthorized else {
-            authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
-            return
-        }
-
-        // Block specific applications by token
-        store.shield.applications = tokens
-    }
-
     func blockSelectedApps(_ selection: FamilyActivitySelection) {
         // Always check authorization status before blocking (fixes race condition on app launch)
         checkAuthorization()
 
         guard isAuthorized else {
             authorizationError = "Not authorized for Screen Time. LemmeGo cannot function without this permission."
+            print("❌ AppBlockingManager.blockSelectedApps: Not authorized")
             return
         }
 
-        // Block the selected apps, categories, and web domains
-        store.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
-        store.shield.applicationCategories = selection.categoryTokens.isEmpty ? nil : .specific(selection.categoryTokens)
-        store.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
+        let appCount = selection.applicationTokens.count
+        let catCount = selection.categoryTokens.count
+        let webCount = selection.webDomainTokens.count
+
+        print("🚫 AppBlockingManager.blockSelectedApps:")
+        print("   Apps: \(appCount), Categories: \(catCount), Web domains: \(webCount)")
+
+        if appCount == 0 && catCount == 0 && webCount == 0 {
+            print("   ⚠️ Selection is empty — no shields will be applied")
+            return
+        }
+
+        // Apply shields — set the tokens directly on the store's shield property.
+        // ManagedSettingsStore persists these shields even if the app is terminated.
+        if appCount > 0 {
+            store.shield.applications = selection.applicationTokens
+            print("   ✅ Set shield.applications (\(appCount) apps)")
+        } else {
+            store.shield.applications = nil
+        }
+
+        if catCount > 0 {
+            store.shield.applicationCategories = .specific(selection.categoryTokens)
+            print("   ✅ Set shield.applicationCategories (\(catCount) categories)")
+        } else {
+            store.shield.applicationCategories = nil
+        }
+
+        if webCount > 0 {
+            store.shield.webDomains = selection.webDomainTokens
+            print("   ✅ Set shield.webDomains (\(webCount) domains)")
+        } else {
+            store.shield.webDomains = nil
+        }
+
+        print("🚫 Shields applied successfully")
     }
 
     func unblockAllApps() {
         print("🔓 AppBlockingManager.unblockAllApps() called")
-        // Clear all shields
-        store.shield.applications = nil
-        print("   ✅ Cleared applications shield")
-        store.shield.applicationCategories = nil
-        print("   ✅ Cleared applicationCategories shield")
-        store.shield.webDomains = nil
-        print("   ✅ Cleared webDomains shield")
-        print("🔓 All shields cleared!")
+        // Clear all shields from the named store
+        store.clearAllSettings()
+        print("🔓 All settings cleared from named store!")
     }
 
-    // MARK: - Device Activity Scheduling
+    // MARK: - Diagnostics
 
-    func scheduleDeviceActivity(for duration: TimeInterval, named: String) {
-        let deviceActivityCenter = DeviceActivityCenter()
-
-        let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 0, minute: 0),
-            intervalEnd: DateComponents(hour: 23, minute: 59),
-            repeats: false
-        )
-
-        do {
-            try deviceActivityCenter.startMonitoring(
-                DeviceActivityName(named),
-                during: schedule
-            )
-        } catch {
-            authorizationError = "Failed to schedule device activity: \(error.localizedDescription)"
-        }
+    /// Returns true if the store currently has any shields applied
+    var hasActiveShields: Bool {
+        return store.shield.applications != nil ||
+               store.shield.applicationCategories != nil ||
+               store.shield.webDomains != nil
     }
+}
 
-    func stopDeviceActivity(named: String) {
-        let deviceActivityCenter = DeviceActivityCenter()
-        deviceActivityCenter.stopMonitoring([DeviceActivityName(named)])
-    }
+// MARK: - Named Store
+
+extension ManagedSettingsStore.Name {
+    static let lemmego = ManagedSettingsStore.Name("LemmeGoShields")
 }

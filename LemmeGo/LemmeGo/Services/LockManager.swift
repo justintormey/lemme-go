@@ -49,9 +49,11 @@ class LockManager: ObservableObject {
             print("   - Remaining: \(session.remainingTime)s")
 
             if session.isActive {
-                // Session is still active - resume lock
-                print("✅ Session still active - resuming lock")
+                // Session is still active - resume lock AND re-apply shields.
+                // Shields may have been lost if the app was terminated.
+                print("✅ Session still active - resuming lock and re-applying shields")
                 startLock()
+                reapplyShields()
             } else {
                 // Session expired while app was closed - clean up properly!
                 print("⚠️ Found expired session on app launch - cleaning up")
@@ -59,6 +61,13 @@ class LockManager: ObservableObject {
             }
         } else {
             print("📊 No existing session found")
+            // No active session — make sure shields are cleared (defensive cleanup)
+            if #available(iOS 16.0, *), let blockingManager = appBlockingManager {
+                if blockingManager.hasActiveShields {
+                    print("⚠️ Found stale shields with no active session — clearing")
+                    blockingManager.unblockAllApps()
+                }
+            }
         }
 
         // Monitor app lifecycle events
@@ -92,10 +101,17 @@ class LockManager: ObservableObject {
     @objc private func handleAppWillEnterForeground() {
         print("📱 App entering foreground - checking session status")
 
-        // Check if session expired while app was backgrounded
-        if let session = currentSession, !session.isActive {
-            print("⚠️ Session expired while backgrounded - ending session")
-            endLockSession(isManualUnlock: false)  // Let notification fire (if not already fired)
+        if let session = currentSession {
+            if !session.isActive {
+                // Session expired while app was backgrounded
+                print("⚠️ Session expired while backgrounded - ending session")
+                endLockSession(isManualUnlock: false)  // Let notification fire (if not already fired)
+            } else {
+                // Session still active — re-apply shields in case they were lost
+                // (iOS can clear ManagedSettings when the app is suspended for a long time)
+                print("✅ Session still active — re-applying shields on foreground")
+                reapplyShields()
+            }
         }
     }
 
@@ -140,17 +156,21 @@ class LockManager: ObservableObject {
             print("   ⏸️  Skipping notification (unlimited session)")
         }
 
-        // Block apps - this is REQUIRED functionality
+        // Block apps - this is REQUIRED functionality.
+        // Always reload the selection from UserDefaults to pick up any changes
+        // the user made in the app picker since the app launched.
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
             if blockingManager.isAuthorized {
-                // Use the user's selected apps from BlockedAppsStore
+                // Reload from UserDefaults to get the latest selection
+                store.reloadSelection()
                 if store.hasBlockedApps {
                     blockingManager.blockSelectedApps(store.selection)
-                    print("   🚫 Apps blocked")
+                    print("   🚫 Apps blocked (\(store.selection.applicationTokens.count) apps, \(store.selection.categoryTokens.count) categories)")
                 } else {
-                    print("   ⚠️ No apps selected to block")
+                    print("   ⚠️ No apps selected to block — user should configure in Settings")
                 }
-                // If no apps selected, user should configure in settings
+            } else {
+                print("   ⚠️ Not authorized to block apps")
             }
         }
 
@@ -193,13 +213,21 @@ class LockManager: ObservableObject {
             print("   ⏸️  Skipping notification (unlimited session)")
         }
 
-        // Block apps using Screen Time API
+        // Block apps using Screen Time API.
+        // Always reload the selection from UserDefaults to pick up any changes
+        // the user made in the app picker since the app launched.
         if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
-            if blockingManager.isAuthorized && store.hasBlockedApps {
-                blockingManager.blockSelectedApps(store.selection)
-                print("   🚫 Apps blocked")
+            if blockingManager.isAuthorized {
+                // Reload from UserDefaults to get the latest selection
+                store.reloadSelection()
+                if store.hasBlockedApps {
+                    blockingManager.blockSelectedApps(store.selection)
+                    print("   🚫 Apps blocked (\(store.selection.applicationTokens.count) apps, \(store.selection.categoryTokens.count) categories)")
+                } else {
+                    print("   ⚠️ No apps selected to block — user should configure in Settings")
+                }
             } else {
-                print("   ⚠️ No apps selected to block or not authorized")
+                print("   ⚠️ Not authorized to block apps")
             }
         }
 
@@ -286,6 +314,28 @@ class LockManager: ObservableObject {
             print("⏰ Timer created and added to RunLoop")
         } else {
             print("❌ Failed to create timer!")
+        }
+    }
+
+    // MARK: - Shield Re-application
+
+    /// Re-apply shields from the persisted BlockedAppsStore selection.
+    /// Called on app resume/restart to ensure shields survive process termination.
+    private func reapplyShields() {
+        if #available(iOS 16.0, *), let blockingManager = appBlockingManager, let store = blockedAppsStore {
+            blockingManager.checkAuthorization()
+            guard blockingManager.isAuthorized else {
+                print("⚠️ reapplyShields: Not authorized — cannot re-apply")
+                return
+            }
+            // Always reload from UserDefaults to get the latest
+            store.reloadSelection()
+            if store.hasBlockedApps {
+                blockingManager.blockSelectedApps(store.selection)
+                print("🔄 reapplyShields: Shields re-applied (\(store.selection.applicationTokens.count) apps, \(store.selection.categoryTokens.count) categories)")
+            } else {
+                print("⚠️ reapplyShields: No apps in BlockedAppsStore — nothing to apply")
+            }
         }
     }
 
