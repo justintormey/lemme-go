@@ -359,7 +359,7 @@ Possible improvements:
 
 ## License
 
-This project is provided as-is for personal use and learning.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Credits
 
