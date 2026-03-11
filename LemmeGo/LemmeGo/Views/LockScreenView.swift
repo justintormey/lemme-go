@@ -166,6 +166,19 @@ struct LockScreenView: View {
                                 }
                                 .padding(.top, 4)
                             }
+
+                            // Shield status diagnostic
+                            if #available(iOS 16.0, *), let msg = lockManager.appBlockingManager?.lastShieldResult {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "shield.checkered")
+                                        .font(.caption2)
+                                        .foregroundColor(.white.opacity(0.5))
+                                    Text(msg)
+                                        .font(.caption2)
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                                .padding(.top, 4)
+                            }
                         }
                     }
                     .padding(.horizontal, 24)

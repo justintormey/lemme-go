@@ -5,7 +5,8 @@ import FamilyControls
 class BlockedAppsStore: ObservableObject {
     @Published var selection = FamilyActivitySelection()
 
-    private let selectionKey = "blockedAppsSelection"
+    private let selectionKey = "blockedAppsSelection_plist"
+    private let legacySelectionKey = "blockedAppsSelection"
 
     init() {
         loadSelection()
@@ -13,7 +14,10 @@ class BlockedAppsStore: ObservableObject {
 
     func saveSelection() {
         do {
-            let encoded = try JSONEncoder().encode(selection)
+            // Use PropertyListEncoder — Apple's opaque token types (ApplicationToken,
+            // CategoryToken, WebDomainToken) use NSKeyedArchiver internally and do not
+            // round-trip reliably through JSONEncoder's Base64 encoding.
+            let encoded = try PropertyListEncoder().encode(selection)
             UserDefaults.standard.set(encoded, forKey: selectionKey)
             print("💾 BlockedAppsStore: Saved selection — \(selection.applicationTokens.count) apps, \(selection.categoryTokens.count) categories, \(selection.webDomainTokens.count) web domains")
         } catch {
@@ -22,17 +26,34 @@ class BlockedAppsStore: ObservableObject {
     }
 
     func loadSelection() {
-        guard let data = UserDefaults.standard.data(forKey: selectionKey) else {
-            print("📂 BlockedAppsStore: No saved selection found in UserDefaults")
-            return
+        // Try the current plist key first
+        if let data = UserDefaults.standard.data(forKey: selectionKey) {
+            do {
+                selection = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+                print("📂 BlockedAppsStore: Loaded selection — \(selection.applicationTokens.count) apps, \(selection.categoryTokens.count) categories, \(selection.webDomainTokens.count) web domains")
+                return
+            } catch {
+                print("❌ BlockedAppsStore: Failed to decode plist selection — \(error.localizedDescription)")
+            }
         }
 
-        do {
-            selection = try JSONDecoder().decode(FamilyActivitySelection.self, from: data)
-            print("📂 BlockedAppsStore: Loaded selection — \(selection.applicationTokens.count) apps, \(selection.categoryTokens.count) categories, \(selection.webDomainTokens.count) web domains")
-        } catch {
-            print("❌ BlockedAppsStore: Failed to decode selection — \(error.localizedDescription)")
+        // Migrate from legacy JSON key if present
+        if let data = UserDefaults.standard.data(forKey: legacySelectionKey) {
+            do {
+                selection = try JSONDecoder().decode(FamilyActivitySelection.self, from: data)
+                print("📂 BlockedAppsStore: Migrated legacy JSON selection — \(selection.applicationTokens.count) apps, \(selection.categoryTokens.count) categories, \(selection.webDomainTokens.count) web domains")
+                // Re-save with plist encoder and remove legacy key
+                saveSelection()
+                UserDefaults.standard.removeObject(forKey: legacySelectionKey)
+                return
+            } catch {
+                print("❌ BlockedAppsStore: Failed to decode legacy JSON selection — \(error.localizedDescription)")
+                // Remove corrupted legacy data
+                UserDefaults.standard.removeObject(forKey: legacySelectionKey)
+            }
         }
+
+        print("📂 BlockedAppsStore: No saved selection found in UserDefaults")
     }
 
     /// Reload the selection from UserDefaults to pick up any changes made since init.

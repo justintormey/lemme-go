@@ -6,6 +6,8 @@ import ManagedSettings
 class AppBlockingManager: ObservableObject {
     @Published var isAuthorized = false
     @Published var authorizationError: String?
+    /// Diagnostic message surfaced on the lock screen so TestFlight users can see what happened.
+    @Published var lastShieldResult: String?
 
     private let center = AuthorizationCenter.shared
     // Use a named ManagedSettingsStore for reliable persistence across app restarts.
@@ -74,6 +76,7 @@ class AppBlockingManager: ObservableObject {
 
         if appCount == 0 && catCount == 0 && webCount == 0 {
             print("   ⚠️ Selection is empty — no shields will be applied")
+            lastShieldResult = "⚠️ No apps selected to block"
             return
         }
 
@@ -100,7 +103,17 @@ class AppBlockingManager: ObservableObject {
             store.shield.webDomains = nil
         }
 
-        print("🚫 Shields applied successfully")
+        // Verify shields were actually persisted by reading them back
+        let verifiedApps = store.shield.applications != nil
+        let verifiedCats = store.shield.applicationCategories != nil
+        let verifiedWebs = store.shield.webDomains != nil
+        if verifiedApps || verifiedCats || verifiedWebs {
+            print("🚫 Shields applied and verified — apps:\(verifiedApps) cats:\(verifiedCats) webs:\(verifiedWebs)")
+            lastShieldResult = "Blocking \(appCount) apps, \(catCount) categories, \(webCount) web domains"
+        } else {
+            print("❌ SHIELD VERIFICATION FAILED — shields were set but read back as nil. ManagedSettingsStore may not be functioning.")
+            lastShieldResult = "❌ Shield verification failed — shields did not persist"
+        }
     }
 
     func unblockAllApps() {
