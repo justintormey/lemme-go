@@ -92,5 +92,6 @@ iOSInjectionProject/
 # macOS
 .DS_Store
 
-# Claude AI
-# history.md is now tracked (kept in private repos for continuity)
+# Claude AI / internal dev files
+history.md
+.claude/settings.local.json
