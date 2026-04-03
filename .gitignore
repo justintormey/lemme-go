@@ -93,5 +93,17 @@ iOSInjectionProject/
 .DS_Store
 
 # Claude AI / internal dev files
+.claude/
 history.md
 .claude/settings.local.json
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
