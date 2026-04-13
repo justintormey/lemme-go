@@ -94,7 +94,6 @@ iOSInjectionProject/
 
 # Claude AI / internal dev files
 .claude/
-history.md
 .claude/settings.local.json
 
 # Environment
