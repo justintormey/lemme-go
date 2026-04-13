@@ -29,10 +29,11 @@ final class NFCChipTests: XCTestCase {
         var set: Set<NFCChip> = [chip1, chip2]
         XCTAssertEqual(set.count, 2)
 
-        // Same id but different name — Hashable uses all stored properties,
-        // so this is a distinct element
+        // chip3 shares the same id as chip1 but has a different name and
+        // registeredAt timestamp. The synthesized Hashable conformance uses
+        // all stored properties, so chip3 is a distinct element — set grows to 3.
         set.insert(chip3)
-        XCTAssertTrue(set.count >= 2)
+        XCTAssertEqual(set.count, 3)
     }
 }
 
