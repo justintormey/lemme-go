@@ -25,7 +25,21 @@
 		E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C862F040D7900EF951A /* FamilyControls.framework */; };
 		E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C882F040D8400EF951A /* ManagedSettings.framework */; };
 		E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */; };
+		T100000000000000000000011 /* LockSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000001 /* LockSessionTests.swift */; };
+		T100000000000000000000012 /* NFCChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000002 /* NFCChipTests.swift */; };
+		T100000000000000000000013 /* EmergencyUnlockTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */; };
+		T100000000000000000000014 /* FormatTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000004 /* FormatTimeTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		T100000000000000000000031 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A100000000000000000000C1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A100000000000000000000BD;
+			remoteInfo = LemmeGo;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		66393538623230362D643431 /* EmergencyUnlockTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockTracker.swift; sourceTree = "<group>"; };
@@ -44,11 +58,16 @@
 		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
 		E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStore.swift; sourceTree = "<group>"; };
-		E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockSheet.swift; sourceTree = "<group>"; };
+		E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EmergencyUnlockSheet.swift; sourceTree = "<group>"; };
 		E8F21C862F040D7900EF951A /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 		E8F21C882F040D8400EF951A /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
 		F53ED8FBB2E84201AE3AD36F /* AppPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPickerView.swift; sourceTree = "<group>"; };
+		T100000000000000000000001 /* LockSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockSessionTests.swift; sourceTree = "<group>"; };
+		T100000000000000000000002 /* NFCChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipTests.swift; sourceTree = "<group>"; };
+		T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockTrackerTests.swift; sourceTree = "<group>"; };
+		T100000000000000000000004 /* FormatTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatTimeTests.swift; sourceTree = "<group>"; };
+		T100000000000000000000005 /* LemmeGoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LemmeGoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +78,13 @@
 				E8F21C872F040D7900EF951A /* FamilyControls.framework in Frameworks */,
 				E8F21C892F040D8400EF951A /* ManagedSettings.framework in Frameworks */,
 				E8F21C8B2F040D8F00EF951A /* DeviceActivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		T100000000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				A100000000000000000000B3 /* LemmeGo.app */,
+				T100000000000000000000005 /* LemmeGoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -125,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				A100000000000000000000B7 /* LemmeGo */,
+				T100000000000000000000050 /* LemmeGoTests */,
 				E8F21C852F040D7900EF951A /* Frameworks */,
 				A100000000000000000000BB /* Products */,
 			);
@@ -138,6 +166,17 @@
 				E8F21C862F040D7900EF951A /* FamilyControls.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		T100000000000000000000050 /* LemmeGoTests */ = {
+			isa = PBXGroup;
+			children = (
+				T100000000000000000000001 /* LockSessionTests.swift */,
+				T100000000000000000000002 /* NFCChipTests.swift */,
+				T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */,
+				T100000000000000000000004 /* FormatTimeTests.swift */,
+			);
+			path = LemmeGoTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -160,6 +199,23 @@
 			productReference = A100000000000000000000B3 /* LemmeGo.app */;
 			productType = "com.apple.product-type.application";
 		};
+		T100000000000000000000030 /* LemmeGoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = T100000000000000000000042 /* Build configuration list for PBXNativeTarget "LemmeGoTests" */;
+			buildPhases = (
+				T100000000000000000000020 /* Sources */,
+				T100000000000000000000021 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				T100000000000000000000032 /* PBXTargetDependency */,
+			);
+			name = LemmeGoTests;
+			productName = LemmeGoTests;
+			productReference = T100000000000000000000005 /* LemmeGoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -172,6 +228,10 @@
 				TargetAttributes = {
 					A100000000000000000000BD = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					T100000000000000000000030 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A100000000000000000000BD;
 					};
 				};
 			};
@@ -189,6 +249,7 @@
 			projectRoot = "";
 			targets = (
 				A100000000000000000000BD /* LemmeGo */,
+				T100000000000000000000030 /* LemmeGoTests */,
 			);
 		};
 /* End PBXProject section */
@@ -226,7 +287,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		T100000000000000000000020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				T100000000000000000000011 /* LockSessionTests.swift in Sources */,
+				T100000000000000000000012 /* NFCChipTests.swift in Sources */,
+				T100000000000000000000013 /* EmergencyUnlockTrackerTests.swift in Sources */,
+				T100000000000000000000014 /* FormatTimeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		T100000000000000000000032 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A100000000000000000000BD /* LemmeGo */;
+			targetProxy = T100000000000000000000031 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A100000000000000000000C3 /* Debug */ = {
@@ -420,6 +500,64 @@
 			};
 			name = Release;
 		};
+		T100000000000000000000040 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LemmeGo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LemmeGo";
+			};
+			name = Debug;
+		};
+		T100000000000000000000041 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LemmeGo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LemmeGo";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -437,6 +575,15 @@
 			buildConfigurations = (
 				A100000000000000000000C3 /* Debug */,
 				A100000000000000000000C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		T100000000000000000000042 /* Build configuration list for PBXNativeTarget "LemmeGoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				T100000000000000000000040 /* Debug */,
+				T100000000000000000000041 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

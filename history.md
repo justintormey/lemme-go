@@ -37,13 +37,12 @@ LemmeGo is a native iOS (SwiftUI) app that uses NFC tags to enforce phone-lockin
 | Remote lock (Lock Now) | ✅ Complete |
 | Emergency unlock | ✅ Complete |
 | UI (Glassmorphism) | ✅ Complete |
-| Unit tests | 🟡 In progress — initial test suite added (#10) |
+| Unit tests | ✅ Complete — test suite + Xcode target configured (#10) |
 | TestFlight / App Store | ⏸️ Requires Apple Family Controls approval |
 
 ## Unfinished Work
 
 ### Immediate Next Steps
-- Add test target to Xcode project (`.xcodeproj`) so the test files in `LemmeGoTests/` can be built and run
 - Expand test coverage to `BlockedAppsStore` (requires mocking FamilyActivitySelection)
 
 ### Future Enhancements
