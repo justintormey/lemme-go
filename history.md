@@ -38,6 +38,7 @@ LemmeGo is a native iOS (SwiftUI) app that uses NFC tags to enforce phone-lockin
 | Emergency unlock | ✅ Complete |
 | UI (Glassmorphism) | ✅ Complete |
 | Unit tests | ✅ Complete — test suite + Xcode target configured (#10) |
+| Security / PII audit | ✅ Complete — repo cleared for public release (#11) |
 | TestFlight / App Store | ⏸️ Requires Apple Family Controls approval |
 
 ## Unfinished Work
