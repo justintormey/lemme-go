@@ -44,7 +44,7 @@ LemmeGo is a native iOS (SwiftUI) app that uses NFC tags to enforce phone-lockin
 ## Unfinished Work
 
 ### Immediate Next Steps
-- Expand test coverage to `BlockedAppsStore` (requires mocking FamilyActivitySelection)
+- *(none — BlockedAppsStore tests added in #12; FamilyActivitySelection token testing is only possible on a physical device with Screen Time entitlement)*
 
 ### Future Enhancements
 - Fix deletion of active NFC tags (prevent or handle gracefully)
@@ -83,6 +83,7 @@ Tests located in `LemmeGo/LemmeGoTests/`:
 - `NFCChipTests` — model encoding, NFCChipStore CRUD and persistence
 - `EmergencyUnlockTrackerTests` — weekly limit enforcement, persistence, Calendar.startOfWeek
 - `FormatTimeTests` — LockManager.formatTime() edge cases
+- `BlockedAppsStoreTests` — empty selection state, plist save/load round-trip, corrupted-data recovery, reloadSelection
 
 ### Build
 ```bash

@@ -29,6 +29,7 @@
 		T100000000000000000000012 /* NFCChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000002 /* NFCChipTests.swift */; };
 		T100000000000000000000013 /* EmergencyUnlockTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */; };
 		T100000000000000000000014 /* FormatTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000004 /* FormatTimeTests.swift */; };
+		T100000000000000000000015 /* BlockedAppsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T100000000000000000000006 /* BlockedAppsStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		T100000000000000000000002 /* NFCChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCChipTests.swift; sourceTree = "<group>"; };
 		T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockTrackerTests.swift; sourceTree = "<group>"; };
 		T100000000000000000000004 /* FormatTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatTimeTests.swift; sourceTree = "<group>"; };
+		T100000000000000000000006 /* BlockedAppsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStoreTests.swift; sourceTree = "<group>"; };
 		T100000000000000000000005 /* LemmeGoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LemmeGoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -175,6 +177,7 @@
 				T100000000000000000000002 /* NFCChipTests.swift */,
 				T100000000000000000000003 /* EmergencyUnlockTrackerTests.swift */,
 				T100000000000000000000004 /* FormatTimeTests.swift */,
+				T100000000000000000000006 /* BlockedAppsStoreTests.swift */,
 			);
 			path = LemmeGoTests;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				T100000000000000000000012 /* NFCChipTests.swift in Sources */,
 				T100000000000000000000013 /* EmergencyUnlockTrackerTests.swift in Sources */,
 				T100000000000000000000014 /* FormatTimeTests.swift in Sources */,
+				T100000000000000000000015 /* BlockedAppsStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
