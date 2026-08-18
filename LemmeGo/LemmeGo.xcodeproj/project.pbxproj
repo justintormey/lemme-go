@@ -59,7 +59,7 @@
 		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
 		E36175C66D1F469FA81E20A8 /* BlockedAppsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStore.swift; sourceTree = "<group>"; };
-		E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EmergencyUnlockSheet.swift; sourceTree = "<group>"; };
+		E8171FEA2F0749B000C17B33 /* EmergencyUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyUnlockSheet.swift; sourceTree = "<group>"; };
 		E8F21C862F040D7900EF951A /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 		E8F21C882F040D8400EF951A /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		E8F21C8A2F040D8F00EF951A /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
@@ -455,7 +455,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -491,7 +491,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

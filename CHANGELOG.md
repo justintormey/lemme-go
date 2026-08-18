@@ -5,6 +5,11 @@ All notable changes to LemmeGo are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-08-18
+
+### Fixed
+- Xcode build failure ("Unexpected duplicate tasks"): `EmergencyUnlockSheet.swift` was registered in the project file as an entitlements plist instead of Swift source (introduced in #10), which generated duplicate bundle-copy tasks and kept the file from compiling. Corrected the file type; the app builds again.
+
 ## [1.1.0] - 2026-08-18
 
 SemVer baseline established. Version taken as-is from the existing `MARKETING_VERSION` in the Xcode project (not bumped).
