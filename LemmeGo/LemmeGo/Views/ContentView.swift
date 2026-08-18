@@ -500,7 +500,7 @@ struct SettingsView: View {
                                     Text("App Version")
                                         .foregroundColor(.white.opacity(0.8))
                                     Spacer()
-                                    Text("1.0")
+                                    Text("1.1.0")
                                         .foregroundColor(.white)
                                 }
                             }
