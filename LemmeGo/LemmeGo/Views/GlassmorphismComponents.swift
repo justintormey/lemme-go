@@ -18,8 +18,10 @@ struct GlassBackground: View {
 
 // MARK: - Dark Locked Background
 struct LockedBackground: View {
-    // Pre-generate particle positions to avoid re-randomizing on every render
-    private let particles: [(x: CGFloat, y: CGFloat, size: CGFloat)] = (0..<20).map { _ in
+    // Generated once per process. An instance `let` did NOT achieve this: SwiftUI builds a
+    // fresh LockedBackground value on every parent render, and LockScreenView re-renders
+    // once a second, so the starfield visibly jumped for the whole session.
+    private static let particles: [(x: CGFloat, y: CGFloat, size: CGFloat)] = (0..<20).map { _ in
         (
             x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
             y: CGFloat.random(in: 0...UIScreen.main.bounds.height),
@@ -40,11 +42,11 @@ struct LockedBackground: View {
             )
 
             // Static particles/stars effect (pre-generated positions)
-            ForEach(0..<particles.count, id: \.self) { i in
+            ForEach(0..<Self.particles.count, id: \.self) { i in
                 Circle()
                     .fill(Color.red.opacity(0.3))
-                    .frame(width: particles[i].size)
-                    .position(x: particles[i].x, y: particles[i].y)
+                    .frame(width: Self.particles[i].size)
+                    .position(x: Self.particles[i].x, y: Self.particles[i].y)
                     .blur(radius: 2)
             }
         }

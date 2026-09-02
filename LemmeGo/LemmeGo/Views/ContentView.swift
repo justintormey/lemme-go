@@ -24,10 +24,12 @@ struct MainView: View {
     @EnvironmentObject var nfcManager: NFCManager
     @EnvironmentObject var chipStore: NFCChipStore
 
-    @State private var selectedHours: Int = 1
-    @State private var selectedMinutes: Int = 0
-    @State private var selectedSeconds: Int = 0
-    @State private var isUnlimitedDuration: Bool = false
+    // Persisted: ContentView swaps MainView out for LockScreenView during a session, so
+    // plain @State was discarded and the wheels silently reverted to 1h after every lock.
+    @AppStorage("durationHours") private var selectedHours: Int = 1
+    @AppStorage("durationMinutes") private var selectedMinutes: Int = 0
+    @AppStorage("durationSeconds") private var selectedSeconds: Int = 0
+    @AppStorage("durationIsUnlimited") private var isUnlimitedDuration: Bool = false
     @State private var showingSettings = false
 
     // Use NFCManager's isScanning to prevent stuck UI
@@ -42,6 +44,12 @@ struct MainView: View {
             return 0  // 0 = unlimited
         }
         return TimeInterval(selectedHours * 3600 + selectedMinutes * 60 + selectedSeconds)
+    }
+
+    /// A timed session needs at least one second. Unlimited sessions carry duration 0 by
+    /// convention, so they are always usable.
+    private var hasUsableDuration: Bool {
+        isUnlimitedDuration || selectedDuration >= 1
     }
 
     var body: some View {
@@ -174,14 +182,14 @@ struct MainView: View {
                             title: "NFC Lock",
                             icon: "wave.3.right.circle.fill",
                             action: startNFCScan,
-                            isDisabled: isScanning
+                            isDisabled: isScanning || !hasUsableDuration
                         )
 
                         GlassButton(
                             title: "Lock Now",
                             icon: "lock.fill",
                             action: startRemoteLock,
-                            isDisabled: false
+                            isDisabled: !hasUsableDuration
                         )
                     }
                     .padding(.horizontal, 24)
@@ -240,9 +248,11 @@ struct MainView: View {
             SettingsView()
         }
         .onChange(of: nfcManager.errorMessage) { error in
-            // Clear error message after 5 seconds
-            if error != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            // Clear after 5 seconds, but only if this exact message is still showing.
+            // Unconditional clearing let an older timer wipe a newer error early.
+            guard let error else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                if nfcManager.errorMessage == error {
                     nfcManager.errorMessage = nil
                 }
             }
@@ -263,7 +273,8 @@ struct MainView: View {
                 isUnlimited: isUnlimitedDuration
             )
             if !success {
-                nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
+                nfcManager.errorMessage = lockManager.lastStartFailure?.message
+                    ?? "LemmeGo could not start a lock session."
             }
         } else {
             nfcManager.errorMessage = "This tag is not registered. Please register it first in Settings."
@@ -284,7 +295,8 @@ struct MainView: View {
         )
 
         if !success {
-            nfcManager.errorMessage = "Screen Time permission is required. Please enable it in Settings to use LemmeGo."
+            nfcManager.errorMessage = lockManager.lastStartFailure?.message
+                ?? "LemmeGo could not start a lock session."
         }
     }
 }
@@ -500,7 +512,7 @@ struct SettingsView: View {
                                     Text("App Version")
                                         .foregroundColor(.white.opacity(0.8))
                                     Spacer()
-                                    Text("1.1.1")
+                                    Text(Bundle.main.appVersionDisplay)
                                         .foregroundColor(.white)
                                 }
                             }
@@ -585,5 +597,17 @@ struct SettingsView: View {
         if #available(iOS 16.0, *), let appBlockingManager = lockManager.appBlockingManager {
             appBlockingManager.checkAuthorization()
         }
+    }
+}
+
+extension Bundle {
+    /// "1.2.0 (3)" from CFBundleShortVersionString and CFBundleVersion, so the About
+    /// screen can never drift from the version the build actually shipped.
+    var appVersionDisplay: String {
+        let short = object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        guard let build = object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
+            return short
+        }
+        return "\(short) (\(build))"
     }
 }

@@ -133,7 +133,7 @@ struct LockScreenView: View {
                                                 )
                                             )
                                             .frame(
-                                                width: geometry.size.width * CGFloat(1.0 - (session.remainingTime / session.duration)),
+                                                width: geometry.size.width * progressFraction(for: session),
                                                 height: 8
                                             )
                                             .animation(.linear(duration: 1), value: currentTime)
@@ -160,7 +160,7 @@ struct LockScreenView: View {
                                     Image(systemName: "lock.fill")
                                         .font(.caption)
                                         .foregroundColor(.blue.opacity(0.8))
-                                    Text("Remote Lock - NFC required to unlock")
+                                    Text("Remote Lock - tap any registered tag to unlock")
                                         .font(.caption)
                                         .foregroundColor(.white.opacity(0.6))
                                 }
@@ -243,6 +243,15 @@ struct LockScreenView: View {
         }
     }
 
+    /// Elapsed fraction of the session, clamped to 0...1. Guards the divisor: a zero
+    /// duration produced NaN here, and a NaN frame width is an invalid CoreGraphics value.
+    private func progressFraction(for session: LockSession) -> CGFloat {
+        guard session.duration > 0 else { return 1 }
+        let elapsed = 1.0 - (session.remainingTime / session.duration)
+        guard elapsed.isFinite else { return 1 }
+        return CGFloat(min(max(elapsed, 0), 1))
+    }
+
     private func startUnlockScan() {
         nfcManager.startScanning { chipId in
             handleUnlockChip(chipId)
@@ -250,7 +259,20 @@ struct LockScreenView: View {
     }
 
     private func handleUnlockChip(_ chipId: String) {
-        if let session = lockManager.currentSession, session.chipId == chipId {
+        guard let session = lockManager.currentSession else {
+            // The session ended on its own between starting the scan and reading the tag.
+            return
+        }
+
+        // A remote ("Lock Now") session was never started by a tag; it just borrows the
+        // first registered one as an identifier. Requiring that exact tag stranded users
+        // holding a different, perfectly valid tag, so accept any registered tag here.
+        // An NFC-started session still demands the tag that started it.
+        let accepted = session.isRemoteActivated
+            ? chipStore.isChipRegistered(id: chipId)
+            : session.chipId == chipId
+
+        if accepted {
             lockManager.endLockSession()
         } else if chipStore.isChipRegistered(id: chipId) {
             nfcManager.errorMessage = "Wrong tag! Use the tag that started this session."

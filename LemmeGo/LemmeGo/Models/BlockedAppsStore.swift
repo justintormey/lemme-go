@@ -4,6 +4,10 @@ import FamilyControls
 @available(iOS 16.0, *)
 class BlockedAppsStore: ObservableObject {
     @Published var selection = FamilyActivitySelection()
+    /// True when persisted data existed but could not be decoded. Distinct from "the user
+    /// picked nothing": both leave `hasBlockedApps` false, but only this one means the
+    /// user's real selection was lost and a lock would silently enforce nothing.
+    @Published private(set) var lastLoadFailed = false
 
     private let selectionKey = "blockedAppsSelection_plist"
     private let legacySelectionKey = "blockedAppsSelection"
@@ -19,6 +23,7 @@ class BlockedAppsStore: ObservableObject {
             // round-trip reliably through JSONEncoder's Base64 encoding.
             let encoded = try PropertyListEncoder().encode(selection)
             UserDefaults.standard.set(encoded, forKey: selectionKey)
+            lastLoadFailed = false
             print("💾 BlockedAppsStore: Saved selection — \(selection.applicationTokens.count) apps, \(selection.categoryTokens.count) categories, \(selection.webDomainTokens.count) web domains")
         } catch {
             print("❌ BlockedAppsStore: Failed to save selection — \(error.localizedDescription)")
@@ -26,6 +31,8 @@ class BlockedAppsStore: ObservableObject {
     }
 
     func loadSelection() {
+        lastLoadFailed = false
+
         // Try the current plist key first
         if let data = UserDefaults.standard.data(forKey: selectionKey) {
             do {
@@ -34,6 +41,7 @@ class BlockedAppsStore: ObservableObject {
                 return
             } catch {
                 print("❌ BlockedAppsStore: Failed to decode plist selection — \(error.localizedDescription)")
+                lastLoadFailed = true
             }
         }
 
@@ -48,6 +56,7 @@ class BlockedAppsStore: ObservableObject {
                 return
             } catch {
                 print("❌ BlockedAppsStore: Failed to decode legacy JSON selection — \(error.localizedDescription)")
+                lastLoadFailed = true
                 // Remove corrupted legacy data
                 UserDefaults.standard.removeObject(forKey: legacySelectionKey)
             }

@@ -68,17 +68,21 @@ class EmergencyUnlockTracker: ObservableObject {
 }
 
 extension Calendar {
+    /// Monday 00:00:00 of the week containing `date`.
+    ///
+    /// Deliberately does NOT use `.weekOfYear` components: `date(from:)` anchors the
+    /// week on the calendar's locale-dependent `firstWeekday`, which is Sunday in
+    /// en_US. That made a Sunday resolve to the FOLLOWING Monday, handing the user a
+    /// second full emergency-unlock budget every Sunday. Counting back from the date's
+    /// own weekday is locale-independent, and stepping in whole days from `startOfDay`
+    /// keeps it correct across DST transitions.
     func startOfWeek(for date: Date) -> Date {
-        // Get Monday 00:00:00 of current week
-        let components = self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
-        guard let weekStart = self.date(from: components) else {
-            return date
-        }
+        let dayStart = self.startOfDay(for: date)
+        // Gregorian weekday: 1 = Sunday ... 7 = Saturday.
+        // Days elapsed since Monday: Mon(2)->0, Tue(3)->1 ... Sat(7)->5, Sun(1)->6.
+        let weekday = self.component(.weekday, from: dayStart)
+        let daysSinceMonday = (weekday + 5) % 7
 
-        // Adjust to Monday (weekday 2 in Gregorian calendar)
-        let weekday = self.component(.weekday, from: weekStart)
-        let daysToAdd = weekday == 1 ? 1 : 2 - weekday
-
-        return self.date(byAdding: .day, value: daysToAdd, to: weekStart) ?? weekStart
+        return self.date(byAdding: .day, value: -daysSinceMonday, to: dayStart) ?? dayStart
     }
 }

@@ -39,7 +39,7 @@ LemmeGo is a native iOS (SwiftUI) app that uses NFC tags to enforce phone-lockin
 | UI (Glassmorphism) | ✅ Complete |
 | Unit tests | ✅ Complete — test suite + Xcode target configured (#10) |
 | Security / PII audit | ✅ Complete — repo cleared for public release (#11) |
-| TestFlight / App Store | ⏸️ Requires Apple Family Controls approval |
+| TestFlight / App Store | ✅ Unblocked — entitlement granted, archive + export verified 2026-09-02 (needs privacy policy URL) |
 
 ## Unfinished Work
 
@@ -58,7 +58,7 @@ LemmeGo is a native iOS (SwiftUI) app that uses NFC tags to enforce phone-lockin
 
 - **Development must be on local disk, NOT iCloud.** iCloud sync causes build failures and file corruption.
 - **NFC only works on physical devices** — no Simulator support.
-- **Family Controls distribution entitlement** required for TestFlight/App Store — must be requested from Apple separately.
+- **Family Controls distribution entitlement is GRANTED.** Long recorded here as pending; verified granted on 2026-09-02 by producing a distribution-signed App Store IPA. The actual blocker had been an empty `DEVELOPMENT_TEAM` in the project file, not Apple.
 - Screen Time permission is checked on every tag scan. If revoked between sessions, the lock will refuse to start with an error message.
 
 ## Technical Details

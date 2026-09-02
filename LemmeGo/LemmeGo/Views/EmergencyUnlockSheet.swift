@@ -5,6 +5,8 @@ struct EmergencyUnlockSheet: View {
     @EnvironmentObject var emergencyTracker: EmergencyUnlockTracker
     @Environment(\.dismiss) var dismiss
 
+    @State private var budgetExhausted = false
+
     var body: some View {
         ZStack {
             LockedBackground()
@@ -34,6 +36,14 @@ struct EmergencyUnlockSheet: View {
                         .font(.body)
                 }
                 .padding(.horizontal, 24)
+
+                if budgetExhausted {
+                    Text("You have used all 5 emergency unlocks this week. They reset on Monday.")
+                        .multilineTextAlignment(.center)
+                        .font(.subheadline)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 24)
+                }
 
                 Spacer()
 
@@ -73,6 +83,10 @@ struct EmergencyUnlockSheet: View {
         if success {
             lockManager.endLockSession()
             dismiss()
+        } else {
+            // The budget ran out between opening this sheet and tapping Unlock. Without
+            // this the button silently did nothing and the sheet just sat there.
+            budgetExhausted = true
         }
     }
 }

@@ -20,14 +20,14 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NFCReaderUsageDescription</key>
 	<string>LemmeGo needs NFC access to read your focus chip and lock your phone for distraction-free time.</string>
 	<key>NSFamilyControlsUsageDescription</key>
 	<string>LemmeGo needs Screen Time permissions to block distracting apps during your focus sessions.</string>
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>LemmeGo needs notification permission to start scheduled lock sessions automatically at your preferred times.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -39,7 +39,7 @@
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

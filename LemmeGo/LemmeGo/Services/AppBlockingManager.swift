@@ -36,8 +36,14 @@ class AppBlockingManager: ObservableObject {
             authorizationError = "Screen Time permission was denied. LemmeGo requires Screen Time access to function. Please enable it in Settings > Screen Time."
         case .notDetermined:
             isAuthorized = false
-        @unknown default:
-            isAuthorized = false
+        default:
+            // iOS 26.4 added .approvedWithDataAccess, which is an APPROVED state.
+            // Treat any status whose raw value is at or beyond .approved as authorized
+            // so a new approval case can never silently disable locking.
+            isAuthorized = center.authorizationStatus.rawValue >= AuthorizationStatus.approved.rawValue
+            if !isAuthorized {
+                authorizationError = "Screen Time authorization is unavailable. LemmeGo requires Screen Time access to function."
+            }
         }
     }
 

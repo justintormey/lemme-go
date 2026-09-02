@@ -4,7 +4,7 @@
 
 LemmeGo is a native iOS app that helps users maintain focus by locking their phone using NFC tags. Users tap an NFC tag to start a timed (or unlimited) lock session; selected apps are blocked via Apple's Screen Time API until the timer expires or the tag is scanned again. An emergency unlock system (5 uses/week, Monday reset) provides a safety valve for users who need to break focus.
 
-**Status:** Feature complete, publicly released. Code passes security audit. Awaiting Apple Family Controls approval for TestFlight/App Store distribution.
+**Status:** v1.2.0. Feature complete, publicly released, security audited. The Family Controls **distribution** entitlement is GRANTED (verified 2026-09-02 by a successful App Store archive + export). TestFlight is unblocked apart from a privacy policy URL. See `docs/TESTFLIGHT-EXTERNAL.md` and `docs/QA-2026-09-02.md`.
 
 ## Tech Stack
 
@@ -58,11 +58,11 @@ docs/
 | NFC tag reading & lock triggering | ✅ Complete | Device only; no Simulator support |
 | Screen Time app blocking | ✅ Complete | `ManagedSettingsStore("LemmeGoShields")` persists across restarts |
 | Timed + unlimited sessions | ✅ Complete | Hour/Minute/Second wheel pickers (0–23h 59m 59s) |
-| Remote lock (Lock Now button) | ✅ Complete | Hybrid: starts without NFC, still requires NFC to unlock |
-| Emergency unlock (5/week, Monday reset) | ✅ Complete | Calendar-based week boundary using `startOfWeek()` extension |
-| Unit tests | ✅ Complete | Test target configured; runs in Xcode |
+| Remote lock (Lock Now button) | ✅ Complete | Hybrid: starts without NFC; any **registered** tag unlocks it (an NFC-started session still needs its own tag) |
+| Emergency unlock (5/week, Monday reset) | ✅ Complete | `startOfWeek()` counts back from the date's own weekday. Do NOT reintroduce `.weekOfYear`: it anchors on locale `firstWeekday` and doubled the budget every Sunday |
+| Unit tests | ✅ 50 passing | Target AND scheme `<Testables>` both wired. Zero ran before 2026-09-02 |
 | Security review | ✅ Complete | No PII, logging, or sensitive data; approved for public release |
-| TestFlight/App Store | ⏸️ Pending | Requires Apple Family Controls distribution entitlement (separate request) |
+| TestFlight/App Store | ✅ Unblocked | Family Controls distribution entitlement granted; archive + App Store export verified. Needs a privacy policy URL before external testing. |
 
 ## Key Decisions & Architecture Notes
 
@@ -100,10 +100,15 @@ No CocoaPods, SPM, or third-party frameworks. Simplifies distribution, build rep
 - Do NOT store the repo in iCloud Drive. File sync conflicts corrupt git refs and cause mysterious build failures. Use local disk only.
 
 **3. Screen Time Permission is Critical**
-- App crashes (gracefully) if Screen Time permission is revoked between sessions. Users must re-grant permission. Check authorization status before every lock start (LockManager:~55).
+- A session refuses to start unless Screen Time is authorized AND at least one app is selected; `validateSessionStart()` returns a typed `LockStartFailure` the UI renders. Revoking Screen Time mid-session does NOT end the session (that would be a one-tap bypass); the lock screen states that apps are no longer blocked.
+- Derive authorization from the status raw value, never an exhaustive case list. iOS 26.4 added `.approvedWithDataAccess`, which fell into `@unknown default` and disabled locking entirely.
 
-**4. Family Controls Distribution Entitlement**
-- Development builds work immediately. TestFlight/App Store requires requesting Family Controls entitlement from Apple (separate request process). Approval can take days to weeks.
+**4. Family Controls Distribution Entitlement — GRANTED, do not re-request**
+- This was listed as pending for months. It is not. Verified 2026-09-02: `xcodebuild archive` plus `-exportArchive -exportOptionsPlist method=app-store-connect` produces a distribution-signed IPA whose embedded profile (`iOS Team Store Provisioning Profile: com.lemmego.app`) carries `com.apple.developer.family-controls` and `beta-reports-active`.
+- `DEVELOPMENT_TEAM` must stay set to `5Y8S56DTEH`. It was empty, which made archiving impossible and is what made the entitlement look like the blocker.
+
+**4b. The scheme must keep its `<Testables>` entry**
+- The shared scheme once had an empty `<Testables>` block, so `Cmd+U` ran zero tests and reported success for months. That hid a live week-boundary bug sitting in an already-committed test. If tests ever "pass" suspiciously fast, check the scheme before believing them.
 
 **5. LockManager is the Largest Class**
 - Handles session lifecycle, timer management, persistence, and shield orchestration. Could benefit from extracting a `SessionPersistence` layer and a `ShieldOrchestrator` class. Not urgent (works fine now), but refactoring opportunity for future agents.
@@ -112,7 +117,7 @@ No CocoaPods, SPM, or third-party frameworks. Simplifies distribution, build rep
 
 - **Logging:** Uses `print()` throughout. No structured logging. Consider adding os.log for future production analytics.
 - **Persistence Keys:** Raw UserDefaults string literals scattered across code. Could centralize in a `UserDefaultsKeys` enum.
-- **Test Coverage:** Good (emergency unlock, blocked apps, session persistence tested). NFC mocking works well; actual tag reading is device-only.
+- **Test Coverage:** Model-level only. `LockManager` and `AppBlockingManager` are untested because they need Screen Time; session restore and shield teardown, the highest-risk paths, have no coverage. Tests also write to `UserDefaults.standard`, so running them wipes real app data on that simulator. See `docs/QA-2026-09-02.md` O6/O7.
 
 ### Common Modifications
 

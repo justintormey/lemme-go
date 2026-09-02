@@ -18,6 +18,7 @@
 		A100000000000000000000AD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* LockScreenView.swift */; };
 		A100000000000000000000AF /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* SetupView.swift */; };
 		A100000000000000000000B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Assets.xcassets */; };
+		A100000000000000000000D2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D1 /* PrivacyInfo.xcprivacy */; };
 		A100000000000000000000C7 /* GlassmorphismComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* GlassmorphismComponents.swift */; };
 		A100000000000000000000C9 /* AppBlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000CA /* AppBlockingManager.swift */; };
 		E8171FEC2F074AEA00C17B33 /* EmergencyUnlockTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66393538623230362D643431 /* EmergencyUnlockTracker.swift */; };
@@ -55,6 +56,7 @@
 		A100000000000000000000B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A100000000000000000000B3 /* LemmeGo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LemmeGo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A100000000000000000000B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A100000000000000000000D1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A100000000000000000000B5 /* LemmeGo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LemmeGo.entitlements; sourceTree = "<group>"; };
 		A100000000000000000000C8 /* GlassmorphismComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassmorphismComponents.swift; sourceTree = "<group>"; };
 		A100000000000000000000CA /* AppBlockingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingManager.swift; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			children = (
 				A100000000000000000000B5 /* LemmeGo.entitlements */,
 				A100000000000000000000B4 /* Info.plist */,
+				A100000000000000000000D1 /* PrivacyInfo.xcprivacy */,
 				A100000000000000000000A2 /* LemmeGoApp.swift */,
 				A100000000000000000000B8 /* Views */,
 				A100000000000000000000B9 /* Models */,
@@ -263,6 +266,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A100000000000000000000B1 /* Assets.xcassets in Resources */,
+				A100000000000000000000D2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -441,7 +445,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LemmeGo/Info.plist;
@@ -455,7 +459,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -477,7 +481,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LemmeGo/Info.plist;
@@ -491,7 +495,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -510,7 +514,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -518,7 +522,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -539,7 +543,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5Y8S56DTEH;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -547,7 +551,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lemmego.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

@@ -95,10 +95,10 @@ These are configured in:
 
 ### 3. Distribution to TestFlight/App Store
 
-**IMPORTANT**: Family Controls capability requires special approval from Apple for distribution builds.
+**NOTE**: Family Controls requires Apple approval for distribution builds. For this app that approval is **already granted** (verified 2026-09-02).
 
 - Development builds work immediately (for testing on your device)
-- TestFlight/App Store distribution requires requesting Family Controls entitlement from Apple
+- TestFlight/App Store distribution requires the Family Controls entitlement from Apple; LemmeGo has it
 - Submit request at: https://developer.apple.com/contact/request/family-controls-distribution
 - Explain your use case and wait for approval (can take several days to weeks)
 
@@ -262,7 +262,7 @@ These are intentional limitations or inherent to iOS that cannot be fixed:
    - **Note**: Opening the app before expiration will show the remaining time and allow manual unlock
 
 4. **TestFlight/App Store Distribution Limitation**
-   - Family Controls requires Apple's special approval for distribution
+   - Family Controls requires Apple's approval for distribution (granted for this app)
    - Development builds work fine for personal use
    - Public distribution requires submitting request to Apple
    - **Why this exists**: Apple restricts Screen Time API to prevent abuse

@@ -84,8 +84,10 @@ struct SetupView: View {
                 chipName = ""
             }
             Button("Save") {
-                if let chipId = scannedChipId, !chipName.isEmpty {
-                    chipStore.registerChip(id: chipId, name: chipName)
+                if let chipId = scannedChipId {
+                    let trimmed = chipName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    // Never discard a successful scan just because the name is blank.
+                    chipStore.registerChip(id: chipId, name: trimmed.isEmpty ? "My Focus Tag" : trimmed)
                 }
                 scannedChipId = nil
                 chipName = ""

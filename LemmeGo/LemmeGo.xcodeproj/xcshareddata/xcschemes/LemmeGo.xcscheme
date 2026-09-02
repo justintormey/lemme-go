@@ -37,6 +37,16 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "T100000000000000000000030"
+               BuildableName = "LemmeGoTests.xctest"
+               BlueprintName = "LemmeGoTests"
+               ReferencedContainer = "container:LemmeGo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
