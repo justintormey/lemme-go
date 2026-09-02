@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LemmeGo Privacy Policy</title>
+<meta name="description" content="LemmeGo collects no data. No account, no analytics, no server. Everything stays on your iPhone.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://demo.justintormey.com/lemmego/privacy/">
+<style>
+  :root {
+    --bg: #0d0512;
+    --bg-2: #150318;
+    --panel: rgba(255,255,255,.045);
+    --border: rgba(255,255,255,.12);
+    --ink: #f2eef6;
+    --ink-dim: rgba(242,238,246,.72);
+    --ink-faint: rgba(242,238,246,.52);
+    --accent: #5fd8e8;
+    --accent-warm: #c86a8f;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 620px at 12% -8%, rgba(95,216,232,.13), transparent 62%),
+      radial-gradient(900px 560px at 92% 4%, rgba(200,106,143,.14), transparent 60%),
+      linear-gradient(165deg, var(--bg) 0%, var(--bg-2) 55%, #0a0410 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font: 400 17px/1.68 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 20px 96px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { padding: 72px 0 8px; }
+  .mark {
+    display: flex; align-items: center; gap: 13px; margin-bottom: 30px;
+  }
+  .hex {
+    width: 40px; height: 40px; flex: none;
+    background: linear-gradient(140deg, var(--accent), #7f8ff0);
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    box-shadow: 0 0 26px rgba(95,216,232,.4);
+  }
+  .mark span { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+  h1 {
+    font-size: clamp(31px, 6.4vw, 43px);
+    line-height: 1.13; letter-spacing: -.025em;
+    font-weight: 700; margin: 0 0 14px;
+  }
+  .updated { color: var(--ink-faint); font-size: 14.5px; margin: 0 0 34px; }
+
+  .lede {
+    font-size: 19px; line-height: 1.6; color: var(--ink-dim);
+    border-left: 2px solid var(--accent);
+    padding: 2px 0 2px 20px; margin: 0 0 44px;
+  }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  h2 {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--accent);
+    margin: 46px 0 15px; padding-top: 26px;
+    border-top: 1px solid var(--border);
+  }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  p { margin: 0 0 17px; color: var(--ink-dim); }
+  p.tight { margin-bottom: 10px; }
+  strong { color: var(--ink); font-weight: 600; }
+
+  .table { margin: 0 0 20px; border: 1px solid var(--border); border-radius: 13px; overflow: hidden; background: var(--panel); }
+  .row { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; padding: 15px 19px; border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: none; }
+  .row dt { font-weight: 600; font-size: 15.5px; color: var(--ink); margin: 0; }
+  .row dd { margin: 0; font-size: 15.5px; color: var(--ink-faint); line-height: 1.55; }
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 1fr; gap: 5px; padding: 14px 16px; }
+  }
+
+  .callout {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 13px; padding: 19px 22px; margin: 0 0 20px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  a { color: var(--accent); text-decoration-color: rgba(95,216,232,.4); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--accent); }
+
+  footer {
+    margin-top: 60px; padding-top: 26px; border-top: 1px solid var(--border);
+    color: var(--ink-faint); font-size: 14.5px;
+  }
+  footer p { color: var(--ink-faint); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mark"><div class="hex" aria-hidden="true"></div><span>LemmeGo</span></div>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated 2 September 2026</p>
+  </header>
+
+  <main>
+    <p class="lede">
+      LemmeGo does not collect your data. There is <strong>no account, no sign-in, no
+      analytics, and no server</strong>. The app contains no networking code at all, so
+      there is nowhere for your information to go even if we wanted it.
+    </p>
+
+    <h2>What LemmeGo stores, and where</h2>
+    <p>Everything below is written to LemmeGo's own storage on your iPhone. None of it
+       leaves the device by any route the app controls.</p>
+    <dl class="table">
+      <div class="row">
+        <dt>Registered NFC tags</dt>
+        <dd>The hardware ID of each tag you register, plus the name you gave it, so the app can tell your tag apart from any other tag.</dd>
+      </div>
+      <div class="row">
+        <dt>Your current lock session</dt>
+        <dd>Start time, length, and which tag started it, so a session survives the app being closed or the phone restarting.</dd>
+      </div>
+      <div class="row">
+        <dt>Your blocked-app selection</dt>
+        <dd>So the same apps are blocked next time.</dd>
+      </div>
+      <div class="row">
+        <dt>Emergency unlock records</dt>
+        <dd>A timestamp for each emergency unlock, used only to enforce the five-per-week limit.</dd>
+      </div>
+    </dl>
+    <p>We do not record which apps you actually open, how long you use them, where you are,
+       or anything about who you are.</p>
+
+    <h2>Screen Time</h2>
+    <p>LemmeGo uses Apple's Screen Time APIs (Family Controls and Managed Settings) to block
+       the apps you choose. Apple hands the app opaque tokens that stand in for your selected
+       apps. Those tokens are meaningless outside your device and cannot be turned back into
+       app names by us or by anyone else.</p>
+    <p>LemmeGo requests <strong>individual authorization only</strong>, meaning you are
+       restricting your own phone. It does not enrol children, does not use Apple's
+       DeviceActivity monitoring, and never reads your actual usage.</p>
+
+    <h2>NFC</h2>
+    <div class="callout">
+      <p>LemmeGo reads only the unique hardware ID that an NFC tag or contactless card
+         broadcasts. It never writes to a tag.</p>
+      <p>If you register a contactless payment card, note that the app reads only its ID. It
+         has no ability to read cardholder details, balances, or payment data, and contains
+         no code that could.</p>
+    </div>
+
+    <h2>Backups</h2>
+    <p>Because LemmeGo's data lives in normal app storage, it is included in your iPhone
+       backups if you back up to iCloud or to a computer. That backup is governed by Apple's
+       privacy policy and your own settings, not by us. Registered tag IDs are stored without
+       additional encryption.</p>
+
+    <h2>Sharing</h2>
+    <p>Nothing is shared with anyone. There are no third-party SDKs, no advertising, no
+       tracking, and no data brokers involved.</p>
+
+    <h2>Deleting your data</h2>
+    <p>Delete the app. Everything it stored goes with it, including any Screen Time
+       restrictions it had applied.</p>
+
+    <h2>Children</h2>
+    <p>LemmeGo is not directed at children and collects nothing from anyone, including
+       children under 13.</p>
+
+    <h2>Changes</h2>
+    <p>If this policy changes, the date at the top changes with it.</p>
+
+    <h2>Contact</h2>
+    <p><a href="mailto:jt@justintormey.com">jt@justintormey.com</a></p>
+  </main>
+
+  <footer>
+    <p>LemmeGo is open source under the MIT license.
+       <a href="https://github.com/justintormey/lemme-go">github.com/justintormey/lemme-go</a></p>
+    <p><a href="https://demo.justintormey.com/">demo.justintormey.com</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -107,3 +107,6 @@ iOSInjectionProject/
 *~
 
 .agent/
+
+# Local deploy config (AWS profile + CloudFront id) — not secret, but machine-specific
+.local/

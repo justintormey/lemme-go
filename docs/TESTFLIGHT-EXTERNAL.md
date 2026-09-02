@@ -21,8 +21,8 @@ by `Apple Distribution: Justin Tormey (5Y8S56DTEH)`.
 
 Translation: the build uploads today. Nothing is blocked on Apple.
 
-One item is still genuinely missing and Apple will not let you enable external
-testing without it: a **privacy policy URL**. See section 6.
+Privacy policy URL is live too, so nothing is outstanding on the submission side.
+See section 6.
 
 ---
 
@@ -55,55 +55,59 @@ transit cards and building access badges.
 ```
 
 ## 2. What to Test
-*(Per-build field. Rewrite it every build. This is build 1, version 1.1.2.)*
+*(Per-build field. Rewrite it every build. This is version 1.2.0, build 1.)*
 
 ```
-Build 1 (1.1.2) — first TestFlight build.
+Build 1 (1.2.0) — first TestFlight build.
 
-Two fixes in this build were found by QA and have never been exercised on a real
-device, so they are the highest-value things to confirm:
+Two fixes here came out of a QA pass and have never run on a real device, so they
+are the most valuable things you can confirm:
 
-1. Screen Time on iOS 26.4 and later. Grant LemmeGo Screen Time access, then
-   start a lock. On earlier builds a new iOS authorization state made the app
-   treat a granted permission as denied and refuse to lock at all. If you see
-   "Screen Time permission is required" after you have already granted it, that
-   is the bug back again and we want to know immediately.
+1. Screen Time on iOS 26.4 and later. Grant LemmeGo Screen Time access, then start
+   a lock. A new iOS authorization state used to be read as "denied", so the app
+   refused to lock at all for people who had granted permission. If you see
+   "Screen Time permission is required" after you have already granted it, that bug
+   is back and we want to hear immediately.
 
-2. Emergency unlock counter on a Sunday. It should show the same remaining count
-   on Sunday that it showed on Saturday. It used to reset a day early and hand
-   you a second batch of five.
+2. The emergency unlock counter on a Sunday. It should read the same on Sunday as
+   it did on Saturday. It used to reset a day early and quietly hand you a second
+   batch of five.
 
 Then, in rough priority order:
 
-3. Register a tag. Anything with a stable NFC ID works. Note what you used, and
-   tell us if a tag scanned once and then failed to scan again.
+3. Register a tag. Anything with a stable NFC ID works. Tell us what you used, and
+   especially if a tag registered fine but then would not scan again.
 
-4. Run a real session. Pick a short duration first, one or two minutes, and
-   confirm the apps you blocked are actually blocked and that they come back
-   unblocked when the timer ends.
+4. Run a real session. Use a short duration first, one or two minutes. Confirm the
+   apps you blocked are actually blocked, and that they work again when it ends.
 
-5. Force-quit the app mid-session, then reopen it. You should land straight back
-   on the lock screen with the correct time remaining and your apps still
-   blocked.
+5. Force-quit the app mid-session, then reopen it. You should land back on the lock
+   screen with the right time left and your apps still blocked.
 
-6. Lock the phone, leave it alone past the end of the session, then open LemmeGo.
-   It should already be unlocked and your apps should work.
+6. Let a session run past its end while LemmeGo is in the background, then open the
+   app. See the note below about this one; we know it is not instant.
 
-7. Tap the wrong tag while locked. It should refuse and say so, not unlock.
+7. Tap the wrong tag while locked. It should refuse and say so.
 
-8. Emergency unlock. Use one. Confirm the count drops and your apps come back.
+8. Emergency unlock. Use one, confirm the count drops and your apps come back.
+
+9. Try to start a lock with no apps selected, and with the duration set to
+   0h 0m 0s. Both should now be refused with a message explaining why, rather than
+   locking you into a session that enforces nothing.
 
 Known and expected in this build:
 - NFC does not work in the Simulator. This is device only.
 - Portrait only, iPhone only, iOS 16 and up.
-- Unlimited sessions have no automatic end. The only ways out are the tag you
-  started with, an emergency unlock, or deleting the app. Do not start one
-  unless the tag is in your hand.
-- Lock Now always binds the session to your first registered tag. If you have
-  several tags, that first one is the one that unlocks it. The lock screen tells
-  you which tag it is.
-- Setting the duration to 0h 0m 0s starts a session that ends almost
-  immediately. Do not read that as the lock failing.
+- When a timed session ends while LemmeGo is in the background, your apps stay
+  blocked until you open LemmeGo. The notification tells you to. This is a real
+  limitation we are fixing properly later; it is not you doing something wrong.
+- Unlimited sessions never end on their own. The only ways out are a registered
+  tag, an emergency unlock, or deleting the app. Do not start one unless a tag is
+  in your hand.
+- "Lock Now" can be released by any tag you have registered, since no particular
+  tag started it. A session you started by scanning still needs that same tag.
+- Changing your device clock will end a timed session early and can refill the
+  emergency-unlock budget. Known, and not worth reporting.
 ```
 
 ## 3. Feedback email
@@ -143,7 +147,9 @@ SUGGESTED REVIEW PATH
 1. Launch. Tap "Register Your First Tag" and hold the card to the top of the
    phone. Give it any name.
 2. Grant Screen Time access when asked. The app cannot block anything without it.
-3. Settings, then choose a few apps to block.
+3. Settings, then choose a few apps to block. This is REQUIRED: LemmeGo refuses to
+   start a session with an empty selection, rather than locking you into a session
+   that blocks nothing.
 4. Set the duration to 1 minute. Leave "Unlimited Duration" off.
 5. Tap "Lock Now". Confirm the blocked apps are shielded.
 6. Tap the same card to unlock, or wait a minute for it to expire on its own.
@@ -194,18 +200,25 @@ cryptography at all. It has no networking, no TLS, no signing, no hashing of
 user data. It is the rare app where "false" is literally true rather than an
 exemption argument.
 
-## 6. Privacy policy URL — REQUIRED, and you do not have one yet
+## 6. Privacy policy URL
 
-App Store Connect will not let you submit an external TestFlight build without a
-privacy policy URL. LemmeGo has no site.
+**Live.** Paste this into App Store Connect (App Information → Privacy Policy URL, and
+the TestFlight Test Information privacy policy field):
 
-Cheapest path that does not invent a domain: publish it under the existing demo
-site at `demo.justintormey.com/lemmego/privacy/`, the same host already serving
-the QR contact card. Draft policy text is in `docs/privacy-policy.md`, ready to
-publish. It is short because the app genuinely collects nothing.
+```
+https://demo.justintormey.com/lemmego/privacy/
+```
 
-The alternative is registering a domain for LemmeGo, which is a bigger decision
-than this release needs.
+Published 2026-09-02 to the `lemmego/` prefix of the `justintormey.com` S3 bucket behind
+CloudFront `E1R27W2LA6BBEH`, the same distribution serving `demo.justintormey.com/qr/`.
+Source is `web/privacy/index.html`; redeploy with `./scripts/deploy` (`--dry-run` first).
+
+Verified live: HTTP 200, `content-type: text/html`, and all three of `/lemmego/privacy/`,
+`/lemmego/privacy`, and `/lemmego/privacy/index.html` resolve. Rendering checked at
+desktop and at a true 390px mobile viewport.
+
+Marketing URL is optional. If you want one, `https://github.com/justintormey/lemme-go`
+is honest and already public; there is no LemmeGo marketing site.
 
 ---
 
@@ -219,12 +232,12 @@ than this release needs.
   starts the process again.
 - External builds expire **90 days** after upload.
 - Up to 10,000 external testers.
-- Build numbers must increase within a version. This build is 1.1.2 build 1; the
-  next upload of 1.1.2 must be build 2.
+- Build numbers must increase within a version. This build is 1.2.0 build 1; the
+  next upload of 1.2.0 must be build 2.
 
 ## Before you flip it on
 
-Status as of 2026-09-02, version 1.1.2.
+Status as of 2026-09-02, version 1.2.0.
 
 **Done, and these were blockers.**
 - **Family Controls distribution entitlement confirmed granted.** Archive and
@@ -245,12 +258,10 @@ Status as of 2026-09-02, version 1.1.2.
 - **Export compliance declared**, so uploads stop prompting.
 
 **Judgement calls left to the owner.**
-1. **The privacy policy URL** in section 6. Required, and it is a hosting
-   decision, not an engineering one.
-2. **Device QA has not happened.** Everything above was verified by building,
+1. **Device QA has not happened.** Everything above was verified by building,
    archiving, exporting and running the unit suite. Nothing has run on an
    iPhone. NFC cannot be tested any other way, and the two headline fixes are
    both in code paths that only execute on a device with Screen Time granted.
-3. **Unlimited sessions are genuinely one-way** without the tag. Five emergency
+2. **Unlimited sessions are genuinely one-way** without the tag. Five emergency
    unlocks a week is the only relief valve. Worth deciding whether a first
    round of external testers should see that feature at all.

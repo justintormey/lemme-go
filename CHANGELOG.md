@@ -5,6 +5,26 @@ All notable changes to LemmeGo are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## Website — 2026-09-02 (no app version change)
+
+Published the LemmeGo privacy policy, which App Store Connect requires a URL for
+before external TestFlight testing can be enabled.
+
+- `web/privacy/index.html` is live at **https://demo.justintormey.com/lemmego/privacy/**
+- `scripts/deploy` publishes `web/` to the `lemmego/` prefix of the
+  `justintormey.com` S3 bucket and invalidates CloudFront `E1R27W2LA6BBEH`, matching
+  the per-project pattern already used by `qr-contact-card`. The sync is confined to
+  that prefix so sibling projects in the same bucket cannot be touched. `--dry-run`
+  previews.
+- `docs/TESTFLIGHT-EXTERNAL.md` section 6 now carries the live URL, and its
+  "What to Test" section was rewritten for 1.2.0. It had been drafted before the QA
+  fixes landed and still listed the zero-duration session and the "Lock Now" tag
+  binding as known issues, both of which 1.2.0 fixes.
+
+**Deliberately no version bump.** `MARKETING_VERSION` is the iOS app's version and
+the app binary is unchanged. Bumping it for a website-only change would put a version
+on the build Justin is about to submit that does not match what was tested.
+
 ## [1.2.0] - 2026-09-02
 
 Full QA pass ahead of TestFlight. The build now archives, exports as an App Store

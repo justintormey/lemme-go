@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Local deploy for the LemmeGo web pages -> S3 + CloudFront.
+#
+# Publishes web/ to the `lemmego/` prefix of the demo.justintormey.com bucket, so
+# web/privacy/index.html becomes https://demo.justintormey.com/lemmego/privacy/.
+# (A CloudFront viewer-request function appends index.html to directory paths.)
+#
+# This deploys the WEBSITE ONLY. It has nothing to do with the iOS app, which ships
+# through Xcode and App Store Connect.
+#
+# Scope note: the sync is confined to the lemmego/ prefix. Sibling prefixes in this
+# bucket (qr/, retro/, drift/, ...) belong to other repos and must never be touched.
+#
+# Usage:
+#   ./scripts/deploy --dry-run   # preview
+#   ./scripts/deploy             # apply
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$SCRIPT_DIR/.."
+SOURCE_DIR="$REPO_DIR/web"
+DEPLOY_CONFIG="$REPO_DIR/.local/deploy.json"
+S3_PATH="s3://justintormey.com/lemmego"
+CF_INVALIDATION_PATH="/lemmego/*"
+
+if [ ! -f "$DEPLOY_CONFIG" ]; then
+  echo "ERROR: deploy config missing: $DEPLOY_CONFIG" >&2
+  exit 1
+fi
+AWS_PROFILE=$(/usr/bin/python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['aws_profile'])" "$DEPLOY_CONFIG")
+CF_ID=$(/usr/bin/python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['cloudfront_id'])" "$DEPLOY_CONFIG")
+
+DRY_RUN=""
+if [ "${1:-}" = "--dry-run" ]; then
+  DRY_RUN="--dryrun"
+  echo "-- DRY RUN --"
+fi
+
+echo "Source : $SOURCE_DIR"
+echo "Target : $S3_PATH"
+echo "Profile: $AWS_PROFILE"
+echo "CloudFront: $CF_ID ($CF_INVALIDATION_PATH)"
+echo
+
+aws s3 sync "$SOURCE_DIR/" "$S3_PATH/" \
+  --profile "$AWS_PROFILE" \
+  --delete \
+  --exclude ".DS_Store" \
+  --exclude ".DS_Store/*" \
+  $DRY_RUN
+
+if [ -n "$DRY_RUN" ]; then
+  echo
+  echo "DRY RUN -- no CloudFront invalidation. Re-run without --dry-run to apply."
+  exit 0
+fi
+
+echo
+echo "Creating CloudFront invalidation..."
+aws cloudfront create-invalidation \
+  --distribution-id "$CF_ID" \
+  --paths "$CF_INVALIDATION_PATH" \
+  --profile "$AWS_PROFILE" \
+  --output text --query 'Invalidation.{Id:Id,Status:Status}'
+
+echo "Done."
